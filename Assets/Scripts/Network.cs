@@ -1,20 +1,20 @@
+using System;
 using System.Collections.Generic;
 
+[Serializable]
 public class Network
 {
-    string _name;
-    IP _ip;
-    Mask _mask;
-    Network _parentNetwork;
-    List<Tag> _tags = new List<Tag>();
-    List<Network> _subNets = new List<Network>();
-
-    public Network(string name, IP ip, Mask mask, Network parentNetwork)
+    [UnityEngine.SerializeField] string _name;
+    [UnityEngine.SerializeField] IP _ip;
+    [UnityEngine.SerializeField] Mask _mask;
+    [UnityEngine.SerializeField] Network _parentNetwork;
+    [UnityEngine.SerializeField] List<Tag> _tags = new List<Tag>();
+    
+    public Network(string name, IP ip, Mask mask)
     {
         this._name = name;
         this._ip = ip;
         this._mask = mask;
-        this._parentNetwork = parentNetwork;
     }
 
     public void ChangeIP(IP newIP)
@@ -42,19 +42,14 @@ public class Network
         _tags.Add(tag);
     }
 
+    public void AddTagRange(List<Tag> tags)
+    {
+        _tags.AddRange(tags);
+    }
+
     public void RemoveTag(Tag tag)
     {
         _tags.Remove(tag);
-    }
-
-    public void AddSubNet(Network subNet)
-    {
-        _subNets.Add(subNet);
-    }
-
-    public void RemoveSubNet(Network subNet)
-    {
-        _subNets.Remove(subNet);
     }
 
     public string GetName()
@@ -82,11 +77,6 @@ public class Network
         return _tags;
     }
 
-    public List<Network> GetSubNets()
-    {
-        return _subNets;
-    }
-
     public IP GetBroadcastIP()
     {
         byte[] ipBytes = _ip.GetIPAsBytes();
@@ -99,5 +89,12 @@ public class Network
         }
 
         return new IP(broadcastBytes);
+    }
+
+    public List<Network> SubNet(Mask newMask)
+    {
+        List<Network> subNets = NetManagement.SubnetNetwork(this, newMask);
+        NetManagement.ApplyNetChanges(new() { this }, subNets);
+        return subNets;
     }
 }

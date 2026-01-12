@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using System;
+using UnityEngine;
 
-[System.Serializable]
+[Serializable]
 public class NetworkData
 {
-    List<Network> _netBases = new List<Network>();
+    [SerializeField] List<Network> _netBases = new List<Network>();
 
     public NetworkData()
     {
@@ -16,11 +18,20 @@ public class NetworkData
 
     public void AddNetworkBase(Network netBase)
     {
-        _netBases.Add(netBase);
+        if (!_netBases.Contains(netBase))
+            _netBases.Add(netBase);
     }
 
     public void RemoveNetworkBase(Network netBase)
     {
-        _netBases.Remove(netBase);
+        if (_netBases.Contains(netBase))
+            _netBases.Remove(netBase);
+    }
+
+    public void SortAll()
+    {
+        if (_netBases.Count <= 1)
+            return;
+        _netBases = NetManagement.SortNetworks(_netBases);
     }
 }

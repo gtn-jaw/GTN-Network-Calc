@@ -1,9 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
+[Serializable]
 public class Mask
 {
-    byte[] _mask;
+    [SerializeField] byte[] _mask;
+
+    public override string ToString()
+    {
+        return string.Join(".", _mask);
+    }
 
     public Mask(byte[] mask)
     {
@@ -72,16 +79,13 @@ public class Mask
 
     public string GetMaskAsStringSlashNotation()
     {
-        int bits = 0;
-        for (int i = 0; i < 4; i++)
-        {
-            for (int j = 7; j >= 0; j--)
-            {
-                if ((_mask[i] & (1 << j)) != 0)
-                    bits++;
-            }
-        }
+        int bits = GetMaskBitsCount();
         return $"/{bits}";
+    }
+
+    public uint GetMaskAsUInt32()
+    {
+        return NetManagement.ToUInt32(this);
     }
 
     public int GetMaskBitsCount()
@@ -179,7 +183,7 @@ public class Mask
 
         return true;
     }
-    
+
     public bool ValidateMask(string maskString)
     {
         if (string.IsNullOrEmpty(maskString))

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework.Internal;
 using UnityEngine;
 
 public class NetVisualizer : MonoBehaviour
@@ -22,54 +21,35 @@ public class NetVisualizer : MonoBehaviour
         Network network1 = new Network(
                 "Network Root 1",
                 new IP(new byte[] { 192, 168, 1, 0 }),
-
-                new Mask(new byte[] { 255, 255, 255, 0 }),
-
-                null
+                new Mask("/24")
         );
 
         network1.AddTag(new Tag("Office", network1, network1.GetIP().GetNextIP(), network1.GetMask()));
         network1.AddTag(new Tag("SecondFloor", network1, network1.GetIP().GetNextIP().GetNextIP(), network1.GetMask()));
 
+        networkData.AddNetworkBase(
+                    network1
+                );
+
         Network network2 = new Network(
                 "Network Root 2",
-                new IP(new byte[] { 10, 0, 10, 0 }),
-
-                new Mask(new byte[] { 255, 255, 0, 0 }),
-
-                null
+                new IP(new byte[] { 10, 5, 0, 0 }),
+                new Mask("/24")
         );
 
-        Network network3 = new Network(
-                "JAWs Office",
-                new IP(new byte[] { 10, 0, 10, 30 }),
-
-                new Mask(new byte[] { 255, 255, 255, 0 }),
-
-                null
-        );
-
-        Network network4 = new Network(
-                "JAWs Second Office",
-                new IP(new byte[] { 10, 0, 10, 32 }),
-
-                new Mask("/26"),
-
-                null
-        );
-
-        network2.AddTag(new Tag("FirstOffice", network1, network1.GetIP().GetNextIP(), network1.GetMask()));
-        network2.AddSubNet(network3);
-        network3.AddSubNet(network4);
-
-        networkData.AddNetworkBase(
-            network1
-        );
+        network2.AddTag(new Tag("FirstOffice", network2, new IP(new byte[] { 10, 5, 0, 1 }), network2.GetMask()));
+        network2.AddTag(new Tag("SecondOffice", network2, new IP(new byte[] { 10, 5, 0, 45 }), network2.GetMask()));
+        network2.AddTag(new Tag("ThirdOffice", network2, new IP(new byte[] { 10, 5, 0, 78 }), network2.GetMask()));
+        network2.AddTag(new Tag("FourthOffice", network2, new IP(new byte[] { 10, 5, 0, 130 }), network2.GetMask()));
 
         networkData.AddNetworkBase(
             network2
         );
 
+        network2.SubNet(new Mask("/25"))[0].SubNet(new Mask("/26"));
+
+        networkData.SortAll();
+        
         VisualizeNetwork();
     }
 
@@ -98,13 +78,12 @@ public class NetVisualizer : MonoBehaviour
 
         foreach (Network network in networks)
         {
-            VisualizeNetworkRecursive(network, 0);
+            VisualizeNetwork(network);
         }
     }
 
-    static void VisualizeNetworkRecursive(Network network, int depth, NetworkVisualization parentNetworkV = null)
+    static void VisualizeNetwork(Network network)
     {
-        List<NetDataV> netDataVs = new List<NetDataV>();
         Mask mask = network.GetMask();
         IP net_ip = network.GetIP();
         IP broadcast_ip = network.GetBroadcastIP();
@@ -112,69 +91,77 @@ public class NetVisualizer : MonoBehaviour
         IP last_usable_ip = broadcast_ip.GetPreviousIP();
         int hostsCount = mask.GetNumberOfUsableHosts();
 
-        NetworkVisualization networkV = SpawnNetworkVisualizer(network, parentNetworkV);
+        NetworkVisualization networkV = SpawnNetworkVisualizer(network);
 
         string indent = "";
-        for (int i = 0; i < depth; i++)
+        for (int i = 0; i < 0; i++)
         {
-            indent += "|         ";
+            indent += "|   ";
         }
 
-        netDataVs.Add(new NetDataV().Init(networkV, indent+$"----DepthOpen({depth})----"));
-        netDataVs.Add(new NetDataV().Init(networkV, net_ip, mask, indent+"Name: " + network.GetName()));
-        netDataVs.Add(new NetDataV().Init(networkV, net_ip, mask, indent+"Network IP: "));
-        netDataVs.Add(new NetDataV().Init(networkV, first_usable_ip, mask, indent+"First Usable IP: "));
-        netDataVs.Add(new NetDataV().Init(networkV, last_usable_ip, mask, indent+"Last Usable IP: "));
-        netDataVs.Add(new NetDataV().Init(networkV, broadcast_ip, mask, indent+"Broadcast IP: "));
-        netDataVs.Add(new NetDataV().Init(networkV, indent+"Number of Usable Hosts: " + hostsCount));
-        netDataVs.Add(new NetDataV().Init(networkV, indent+"Tags:"));
-        
-        foreach (Tag tag in network.GetTags())
+        List<NetData> netDatas = new List<NetData>();
+
+        void AddNDListToList(List<NetData> datas)
         {
-            netDataVs.Add(new NetDataV().Init(networkV, tag.ip, tag.mask, indent+"|         " + "Tag-- " + tag.Text));
+            datas.ForEach(data =>
+            {
+                netDatas.Add(data);
+            });
         }
 
-netDataVs.Add(new NetDataV().Init(networkV, indent+"Subnets:"));
-
-        foreach (NetDataV netDataV in netDataVs)
+        void AddNDToList(NetData data)
         {
-            SpawnNetDataV(networkV, netDataV);
-        }
-        netDataVs.Clear();
-
-        foreach (Network subNet in network.GetSubNets())
-        {
-            VisualizeNetworkRecursive(subNet, depth + 1, networkV);
+            netDatas.Add(data);
         }
 
-        netDataVs.Add(new NetDataV().Init(networkV, indent+$"----DepthClose({depth})----"));
-        SpawnNetDataV(networkV, netDataVs[0]);
+        void PushNetDataList()
+        {
+            foreach (NetData netData in netDatas)
+            {
+                Debug.Log("netDataV Spawn");
+                SpawnNetDataV(networkV, netData);
+            }
+            netDatas.Clear();
+        }
+
+        AddNDListToList(
+            new() {
+                NetData.Create(networkV, indent + $"----------------------------------"),
+                NetData.Create(networkV, "Name: " + network.GetName()),
+                NetData.Create(networkV, $"Network IP: {net_ip}{mask.GetMaskAsStringSlashNotation()} ({mask.GetMaskAsStringDottedNotation()})"),
+                NetData.Create(networkV, first_usable_ip, mask, indent + "First Usable IP: "),
+                NetData.Create(networkV, last_usable_ip, mask, indent + "Last Usable IP: "),
+                NetData.Create(networkV, broadcast_ip, mask, indent + "Broadcast IP: "),
+                NetData.Create(networkV, indent + "Number of Usable Hosts: " + hostsCount),
+                NetData.Create(networkV, indent + (network.GetTags().Count > 0 ? "Tags:" : "No Tags")),
+            }
+        );
+
+        network.GetTags().ForEach(tag =>
+        {
+            AddNDToList(NetData.Create(networkV, tag.ip, tag.mask, indent + "Tag-- " + tag.Text));
+        });
+        PushNetDataList();
     }
 
-    static NetworkVisualization SpawnNetworkVisualizer(Network network, NetworkVisualization parentNetworkV = null)
+    static NetworkVisualization SpawnNetworkVisualizer(Network network)
     {
         GameObject networkVObj = GameObject.Instantiate(_networkVisualizerPrefab);
-        NetworkVisualization networkV = networkVObj.GetComponent<NetworkVisualization>().Init(network, parentNetworkV);
+        NetworkVisualization networkV = networkVObj.GetComponent<NetworkVisualization>().Init(network);
         networkVObj.name = "NetworkVisualizer_" + network.GetName();
-        if (parentNetworkV != null)
-        {
-            networkVObj.transform.parent = parentNetworkV.transform;
-        }
-        else
-        {
-            networkVObj.transform.parent = NetHolder.instance.rootVTransform;
-        }
+        networkVObj.transform.parent = NetHolder.instance.rootVTransform;
         networkVObj.transform.SetAsLastSibling();
         networkVObj.transform.localScale = Vector3.one;
 
         return networkV;
     }
 
-    static NetDataV SpawnNetDataV(NetworkVisualization parentNetworkV, NetDataV _netDataV)
+    static NetDataV SpawnNetDataV(NetworkVisualization parentNetworkV, NetData _netData)
     {
         GameObject netDataVObj = GameObject.Instantiate(_netDataVPrefab);
-        NetDataV netDataV = netDataVObj.GetComponent<NetDataV>().Init(_netDataV);
-        netDataVObj.name = "NetDataV_" + netDataV.GetText();
+        NetDataV netDataV = netDataVObj.GetComponent<NetDataV>();
+        netDataV.SetNetData(_netData);
+        netDataVObj.name = "NetDataV_" + _netData.GetText();
         netDataVObj.transform.parent = parentNetworkV.transform;
         netDataVObj.transform.SetAsLastSibling();
         netDataVObj.transform.localScale = Vector3.one;

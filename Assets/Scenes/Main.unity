@@ -203,7 +203,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 8.35
+  m_fontSize: 8
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -863,7 +863,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 7.95
+  m_fontSize: 7.65
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -999,7 +999,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.95
+  m_fontSize: 16.25
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2221,7 +2221,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.65
+  m_fontSize: 16.85
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2999,7 +2999,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 11.05
+  m_fontSize: 10.6
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3277,7 +3277,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15.55
+  m_fontSize: 14.9
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3763,7 +3763,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14.8
+  m_fontSize: 14.2
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -3899,7 +3899,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 9.3
+  m_fontSize: 8.9
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4035,7 +4035,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14.2
+  m_fontSize: 13.6
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4171,7 +4171,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.2
+  m_fontSize: 15.5
   m_fontSizeBase: 18.35
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4413,6 +4413,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ba6cd015e02cea499abff964980c3e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetHolder
+  _networkDataInspector:
+    _netBases: []
   rootVTransform: {fileID: 979652690}
 --- !u!1 &1609253080
 GameObject:

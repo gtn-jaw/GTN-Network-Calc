@@ -1,8 +1,17 @@
+using System;
 using System.Collections.Generic;
+using UnityEngine;
 
+[Serializable]
 public class IP
 {
-    byte[] _ip;
+    [SerializeField] byte[] _ip;
+
+    public override string ToString()
+    {
+        return string.Join(".", _ip);
+    }
+
     public IP(byte[] ip)
     {
         if (!ValidateIP(ip))
@@ -45,6 +54,11 @@ public class IP
         return string.Join(".", _ip);
     }
 
+    public uint GetIPAsUInt32()
+    {
+        return NetManagement.ToUInt32(this);
+    }
+
     public void SetIP(byte[] ip)
     {
         if (!ValidateIP(ip))
@@ -74,7 +88,7 @@ public class IP
 
     public bool ValidateIPList(List<byte> ipList)
     {
-        if (ipList.Count != 4)
+        if (ipList == null || ipList.Count != 4)
             return false;
 
         foreach (var segment in ipList)
@@ -88,7 +102,7 @@ public class IP
 
     public bool ValidateIP(byte[] ip)
     {
-        if (ip.Length != 4)
+        if (ip == null || ip.Length != 4)
             return false;
 
         return true;
@@ -101,7 +115,7 @@ public class IP
 
         string[] segments = ipString.Split('.');
 
-        if (segments.Length != 4)
+        if (ipString == null || segments.Length != 4)
             return false;
 
         foreach (var segment in segments)
@@ -116,11 +130,6 @@ public class IP
     public bool ValidateIP(IP ip)
     {
         return ip.ValidateIP(ip.GetIPAsBytes());
-    }
-
-    public override string ToString()
-    {
-        return string.Join(".", _ip);
     }
 
     public IP GetNextIP()

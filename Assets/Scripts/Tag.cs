@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[System.Serializable]
 public class Tag
 {
     public string Text;

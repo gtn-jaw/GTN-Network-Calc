@@ -8,10 +8,9 @@ public class NetworkVisualization : MonoBehaviour
     List<NetDataV> _netDataVs = new List<NetDataV>();
     List<NetworkVisualization> _subNetVs = new List<NetworkVisualization>();
 
-    public NetworkVisualization Init(Network network, NetworkVisualization parentNetworkV)
+    public NetworkVisualization Init(Network network)
     {
         _network = network;
-        _parentNetworkV = parentNetworkV;
         return this;
     }
 
