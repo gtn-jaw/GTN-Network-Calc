@@ -14,7 +14,7 @@ PlayerSettings:
   accelerometerFrequency: 60
   companyName: GTN_JAW
   productName: NetCal
-  defaultCursor: {fileID: 2800000, guid: 7dec442dfe300184b9a8627c0603728b, type: 3}
+  defaultCursor: {fileID: 2800000, guid: 951455ad14eb7ce4eac93e4839771964, type: 3}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
   m_ShowUnitySplashScreen: 0

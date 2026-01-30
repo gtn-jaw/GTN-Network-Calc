@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 7dec442dfe300184b9a8627c0603728b
+guid: 951455ad14eb7ce4eac93e4839771964
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6554736390298987251
-    second: cursor_0
+      213: -8737704298123837536
+    second: MouseCursor_0
   - first:
-      213: -577436947000661451
-    second: cursor_1
+      213: 5130206374223518805
+    second: MouseCursor_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,7 +49,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -75,7 +75,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -103,13 +103,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cursor_0
+      name: MouseCursor_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 2
-        width: 37
-        height: 49
+        y: 13
+        width: 149
+        height: 196
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -118,20 +118,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3fae81cb40a17fa50800000000000000
-      internalID: 6554736390298987251
+      spriteID: 0afbce53c307db680800000000000000
+      internalID: -8737704298123837536
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: cursor_1
+      name: MouseCursor_1
       rect:
         serializedVersion: 2
-        x: 6
+        x: 29
         y: 0
-        width: 32
-        height: 18
+        width: 128
+        height: 68
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -140,8 +140,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 53ae6d5f7288cf7f0800000000000000
-      internalID: -577436947000661451
+      spriteID: 55c99003487223740800000000000000
+      internalID: 5130206374223518805
       vertices: []
       indices: 
       edges: []
@@ -160,8 +160,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cursor_0: 6554736390298987251
-      cursor_1: -577436947000661451
+      MouseCursor_0: -8737704298123837536
+      MouseCursor_1: 5130206374223518805
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

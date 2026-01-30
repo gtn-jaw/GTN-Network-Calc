@@ -184,4 +184,22 @@ public class NetManagement
             networkData.AddNetworkBase(net);
         }
     }
+
+    public static bool ValidateByteAsString(string ipByteString)
+    {
+        if (!byte.TryParse(ipByteString, out byte byteSegment))
+            return false;
+
+        return true;
+    }
+    
+    static readonly byte[] validMaskBytes = new byte[9]
+    {
+        0, 128, 192, 224, 240, 248, 252, 254, 255
+    };
+
+    public static bool ValidateMaskByte(byte bite)
+    {
+        return validMaskBytes.Contains(bite);
+    }
 }

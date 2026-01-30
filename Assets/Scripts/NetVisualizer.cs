@@ -118,7 +118,6 @@ public class NetVisualizer : MonoBehaviour
         {
             foreach (NetData netData in netDatas)
             {
-                Debug.Log("netDataV Spawn");
                 SpawnNetDataV(networkV, netData);
             }
             netDatas.Clear();

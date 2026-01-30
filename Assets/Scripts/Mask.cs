@@ -105,9 +105,7 @@ public class Mask
     public int GetNumberOfUsableHosts()
     {
         int bits = 32 - GetMaskBitsCount();
-        if (bits <= 0)
-            return 0;
-        if (bits == 1)
+        if (bits <= 1)
             return 0;
         return (int)Mathf.Pow(2, bits) - 2;
     }
@@ -167,6 +165,12 @@ public class Mask
         if (mask.Length != 4)
             return false;
 
+        foreach (var segment in mask)
+        {
+            if (!NetManagement.ValidateMaskByte(segment))
+                return false;
+        }
+
         return true;
     }
 
@@ -177,7 +181,7 @@ public class Mask
 
         foreach (var segment in maskList)
         {
-            if (segment < 0 || segment > 255)
+            if (!NetManagement.ValidateMaskByte(segment))
                 return false;
         }
 
@@ -193,10 +197,10 @@ public class Mask
         if (slashNotation)
         {
             string bitsString = maskString.Replace("/", "");
-            if (!int.TryParse(bitsString, out int bits))
+            if (!byte.TryParse(bitsString, out byte bites))
                 return false;
 
-            if (bits < 0 || bits > 32)
+            if (bites < 0 || bites > 32)
                 return false;
         }
         else
@@ -210,6 +214,9 @@ public class Mask
             {
                 if (!byte.TryParse(segment, out byte byteSegment))
                     return false;
+
+                if (!NetManagement.ValidateMaskByte(byteSegment))
+                return false;
             }
         }
 
