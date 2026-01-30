@@ -25,7 +25,7 @@ jobs:
         uses: tsickert/discord-webhook@v7.0.0
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
-          embed-title: 'Nowa wersja gry typu prehunter!'
+          embed-title: 'Nowa wersja kalkulatora sieci!'
           embed-url: ${{ github.event.release.html_url || inputs.releaseUrl }}
           embed-description: |
             Właśnie wyszła nowa wersja kalkulatora! Teraz możesz podzielić swoją sieć na jeszcze więcej podsieci.
