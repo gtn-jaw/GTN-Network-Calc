@@ -1,0 +1,110 @@
+name: Build for provided platform
+
+on:
+  workflow_call:
+    inputs:
+      targetPlatform:
+        description: 'The target platform to build for'
+        required: true
+        type: string
+        default: 'StandaloneWindows64'
+
+jobs:
+  build:
+    name: ${{ inputs.targetPlatform }}
+    runs-on: self-hosted
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          lfs: true
+          clean: false
+      - name: Restore library from cache
+        run: |
+          CACHE_DIR="/root/unity-cache/Library-${{ inputs.targetPlatform }}"
+          if [ -d "Library" ]; then
+             rm -rf Library
+          fi
+          if [ -d "$CACHE_DIR" ]; then
+            mv "$CACHE_DIR" Library
+          fi
+      - name: Check if build profile exists
+        id: check_profile
+        run: |
+          PROFILE_PATH="Assets/Settings/Build Profiles/${{ inputs.targetPlatform }}.asset"
+          if [ -f "$PROFILE_PATH" ]; then
+            echo "has_profile=true" >> $GITHUB_OUTPUT
+            echo "profile_path=$PROFILE_PATH" >> $GITHUB_OUTPUT
+          else
+            echo "has_profile=false" >> $GITHUB_OUTPUT
+            echo "profile_path=" >> $GITHUB_OUTPUT
+          fi
+      - name: Debug info
+        if: ${{ always() }}
+        run: |
+          echo "Is build profile detected?: ${{ steps.check_profile.outputs.has_profile }}"
+          echo "Profile path: ${{ steps.check_profile.outputs.profile_path || 'None' }}"
+      - name: Build project
+        uses: game-ci/unity-builder@v4
+        id: unity-builder
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          targetPlatform: ${{ inputs.targetPlatform }}
+          versioning: Tag
+          buildProfile: ${{ steps.check_profile.outputs.has_profile == 'true' && steps.check_profile.outputs.profile_path || null }}
+      - name: Save library to cache
+        if: always()
+        run: |
+          CACHE_DIR="/root/unity-cache/Library-${{ inputs.targetPlatform }}"
+          if [ -d "Library" ]; then
+            mv Library "$CACHE_DIR"
+          fi
+
+    # nightly
+
+      - if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        name: Publish artifact if nightly
+        uses: actions/upload-artifact@v6
+        id: upload-artifact
+        with:
+          name: Build-${{ inputs.targetPlatform }}-nightly
+          path: build/${{ inputs.targetPlatform }}
+          compression-level: 9
+          overwrite: true
+      - if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        name: Send discord webhook if nightly
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          embed-title: 'Nowa wersja nightly kalkulatora sieciowego'
+          embed-url: ${{ steps.upload-artifact.outputs.artifact-url }}
+          embed-description: |
+            Czy wiesz, że gdy podzielisz sieć na podsieci to możesz podłaczyć więcej hostów?
+            Możesz pobrać kalkulator [tutaj](${{ steps.upload-artifact.outputs.artifact-url }}). Build przeznaczony na `${{ inputs.targetPlatform }}`.
+          embed-color: 1103120
+          embed-thumbnail-url: https://static.wikia.nocookie.net/nicos-nextbots/images/0/02/Chilly_high_res.png/
+
+    # release
+
+      - if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        name: Zip build if release
+        uses: vimtor/action-zip@v1.2
+        with:
+          files: build/${{ inputs.targetPlatform }}
+          dest: Build-${{ inputs.targetPlatform }}.zip
+      - if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        name: Publish release if release
+        uses: softprops/action-gh-release@v2
+        id: gh-release
+        with:
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
+          make_latest: true
+          files: |
+            Build-${{ inputs.targetPlatform }}.zip
