@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class TabDropdownInput : TabInput
 {
-    [SerializeField] TMP_Text FieldName;
-    [SerializeField] TMP_Dropdown Dropdown;
+    [SerializeField]
+    TMP_Text FieldName;
+
+    [SerializeField]
+    TMP_Dropdown Dropdown;
 
     public void Init(string fieldName, string[] options, int defaultIndex)
     {

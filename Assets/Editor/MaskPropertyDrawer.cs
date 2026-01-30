@@ -1,6 +1,6 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 [CustomPropertyDrawer(typeof(Mask))]
 public class MaskPropertyDrawer : PropertyDrawer
@@ -21,8 +21,20 @@ public class MaskPropertyDrawer : PropertyDrawer
         }
 
         // Define rectangles for each part of the drawer
-        Rect maskStringRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-        Rect maskArrayRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, position.width, EditorGUI.GetPropertyHeight(maskField));
+        Rect maskStringRect = new Rect(
+            position.x,
+            position.y,
+            position.width,
+            EditorGUIUtility.singleLineHeight
+        );
+        Rect maskArrayRect = new Rect(
+            position.x,
+            position.y
+                + EditorGUIUtility.singleLineHeight
+                + EditorGUIUtility.standardVerticalSpacing,
+            position.width,
+            EditorGUI.GetPropertyHeight(maskField)
+        );
 
         // Draw the non-editable Mask string
         string maskString = GetString(maskField);
@@ -47,7 +59,9 @@ public class MaskPropertyDrawer : PropertyDrawer
         float arrayHeight = EditorGUI.GetPropertyHeight(maskField);
 
         // Total height: Label height + Spacing + Dynamic array height
-        return EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + arrayHeight;
+        return EditorGUIUtility.singleLineHeight
+            + EditorGUIUtility.standardVerticalSpacing
+            + arrayHeight;
     }
 
     // Helper method to get the byte array from the serialized property
@@ -64,8 +78,10 @@ public class MaskPropertyDrawer : PropertyDrawer
     // Helper method to validate the `_mask` byte array
     private bool ValidateMask(SerializedProperty property)
     {
-        if (property == null) return false;
-        if (property.arraySize != 4) return false;
+        if (property == null)
+            return false;
+        if (property.arraySize != 4)
+            return false;
 
         for (int i = 0; i < property.arraySize; i++)
         {

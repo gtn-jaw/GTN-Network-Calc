@@ -7,7 +7,7 @@ public class NetData
         DESCRIPTION,
         IPDESCRIPTION,
         COUNT,
-        NONE
+        NONE,
     }
 
     public string _text { get; private set; }

@@ -3,11 +3,20 @@ using UnityEngine;
 
 public class TabMaskInput : TabInput
 {
-    [SerializeField] TMP_Text FieldName;
-    [SerializeField] TMP_InputField[] IPBytes;
-    [SerializeField] TMP_InputField SlashNotation;
-    [SerializeField] Color ValidColor = Color.white;
-    [SerializeField] Color InvalidColor = Color.red;
+    [SerializeField]
+    TMP_Text FieldName;
+
+    [SerializeField]
+    TMP_InputField[] IPBytes;
+
+    [SerializeField]
+    TMP_InputField SlashNotation;
+
+    [SerializeField]
+    Color ValidColor = Color.white;
+
+    [SerializeField]
+    Color InvalidColor = Color.red;
 
     public void Init(string fieldName, Mask defaultMask)
     {
@@ -26,7 +35,6 @@ public class TabMaskInput : TabInput
         // Slash notation
         SlashNotation.text = defaultMask.GetMaskBitsCount().ToString();
         SlashNotation.onValueChanged.AddListener((value) => OnMaskSlashChanged(value));
-
 
         _mask = defaultMask;
     }
@@ -64,7 +72,8 @@ public class TabMaskInput : TabInput
         {
             IPBytes[index].image.color = InvalidColor;
         }
-        RaiseOnValueChanged(); Debug.Log("Mask byte changed");
+        RaiseOnValueChanged();
+        Debug.Log("Mask byte changed");
     }
 
     private void OnMaskSlashChanged(string value)
@@ -85,7 +94,8 @@ public class TabMaskInput : TabInput
         {
             SlashNotation.image.color = InvalidColor;
         }
-        RaiseOnValueChanged(); Debug.Log("Mask slash changed");
+        RaiseOnValueChanged();
+        Debug.Log("Mask slash changed");
     }
 
     private void UpdateDottedNotation()

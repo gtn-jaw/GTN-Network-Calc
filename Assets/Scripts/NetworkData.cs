@@ -1,15 +1,14 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
 public class NetworkData
 {
-    [SerializeField] List<Network> _netBases = new List<Network>();
+    [SerializeField]
+    List<Network> _netBases = new List<Network>();
 
-    public NetworkData()
-    {
-    }
+    public NetworkData() { }
 
     public List<Network> GetNetworkBases()
     {

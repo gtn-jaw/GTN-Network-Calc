@@ -1,11 +1,12 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 [Serializable]
 public class Mask
 {
-    [SerializeField] byte[] _mask;
+    [SerializeField]
+    byte[] _mask;
 
     public override string ToString()
     {
@@ -120,7 +121,9 @@ public class Mask
     public void SetMask(List<byte> maskList)
     {
         if (!ValidateMask(maskList))
-            throw new System.Exception($"Invalid Mask byte list. Value: {string.Join(".", maskList)}");
+            throw new System.Exception(
+                $"Invalid Mask byte list. Value: {string.Join(".", maskList)}"
+            );
         _mask = maskList.ToArray();
     }
 
@@ -216,7 +219,7 @@ public class Mask
                     return false;
 
                 if (!NetManagement.ValidateMaskByte(byteSegment))
-                return false;
+                    return false;
             }
         }
 

@@ -19,37 +19,65 @@ public class NetVisualizer : MonoBehaviour
         NetHolder.SetNetworkData(networkData);
 
         Network network1 = new Network(
-                "Network Root 1",
-                new IP(new byte[] { 192, 168, 1, 0 }),
-                new Mask("/24")
+            "Network Root 1",
+            new IP(new byte[] { 192, 168, 1, 0 }),
+            new Mask("/24")
         );
 
-        network1.AddTag(new Tag("Office", network1, network1.GetIP().GetNextIP(), network1.GetMask()));
-        network1.AddTag(new Tag("SecondFloor", network1, network1.GetIP().GetNextIP().GetNextIP(), network1.GetMask()));
+        network1.AddTag(
+            new Tag("Office", network1, network1.GetIP().GetNextIP(), network1.GetMask())
+        );
+        network1.AddTag(
+            new Tag(
+                "SecondFloor",
+                network1,
+                network1.GetIP().GetNextIP().GetNextIP(),
+                network1.GetMask()
+            )
+        );
 
-        networkData.AddNetworkBase(
-                    network1
-                );
+        networkData.AddNetworkBase(network1);
 
         Network network2 = new Network(
-                "Network Root 2",
-                new IP(new byte[] { 10, 5, 0, 0 }),
-                new Mask("/24")
+            "Network Root 2",
+            new IP(new byte[] { 10, 5, 0, 0 }),
+            new Mask("/24")
         );
 
-        network2.AddTag(new Tag("FirstOffice", network2, new IP(new byte[] { 10, 5, 0, 1 }), network2.GetMask()));
-        network2.AddTag(new Tag("SecondOffice", network2, new IP(new byte[] { 10, 5, 0, 45 }), network2.GetMask()));
-        network2.AddTag(new Tag("ThirdOffice", network2, new IP(new byte[] { 10, 5, 0, 78 }), network2.GetMask()));
-        network2.AddTag(new Tag("FourthOffice", network2, new IP(new byte[] { 10, 5, 0, 130 }), network2.GetMask()));
-
-        networkData.AddNetworkBase(
-            network2
+        network2.AddTag(
+            new Tag("FirstOffice", network2, new IP(new byte[] { 10, 5, 0, 1 }), network2.GetMask())
         );
+        network2.AddTag(
+            new Tag(
+                "SecondOffice",
+                network2,
+                new IP(new byte[] { 10, 5, 0, 45 }),
+                network2.GetMask()
+            )
+        );
+        network2.AddTag(
+            new Tag(
+                "ThirdOffice",
+                network2,
+                new IP(new byte[] { 10, 5, 0, 78 }),
+                network2.GetMask()
+            )
+        );
+        network2.AddTag(
+            new Tag(
+                "FourthOffice",
+                network2,
+                new IP(new byte[] { 10, 5, 0, 130 }),
+                network2.GetMask()
+            )
+        );
+
+        networkData.AddNetworkBase(network2);
 
         network2.SubNet(new Mask("/25"))[0].SubNet(new Mask("/26"));
 
         networkData.SortAll();
-        
+
         VisualizeNetwork();
     }
 
@@ -124,29 +152,42 @@ public class NetVisualizer : MonoBehaviour
         }
 
         AddNDListToList(
-            new() {
+            new()
+            {
                 NetData.Create(networkV, indent + $"----------------------------------"),
                 NetData.Create(networkV, "Name: " + network.GetName()),
-                NetData.Create(networkV, $"Network IP: {net_ip}{mask.GetMaskAsStringSlashNotation()} ({mask.GetMaskAsStringDottedNotation()})"),
+                NetData.Create(
+                    networkV,
+                    $"Network IP: {net_ip}{mask.GetMaskAsStringSlashNotation()} ({mask.GetMaskAsStringDottedNotation()})"
+                ),
                 NetData.Create(networkV, first_usable_ip, mask, indent + "First Usable IP: "),
                 NetData.Create(networkV, last_usable_ip, mask, indent + "Last Usable IP: "),
                 NetData.Create(networkV, broadcast_ip, mask, indent + "Broadcast IP: "),
                 NetData.Create(networkV, indent + "Number of Usable Hosts: " + hostsCount),
-                NetData.Create(networkV, indent + (network.GetTags().Count > 0 ? "Tags:" : "No Tags")),
+                NetData.Create(
+                    networkV,
+                    indent + (network.GetTags().Count > 0 ? "Tags:" : "No Tags")
+                ),
             }
         );
 
-        network.GetTags().ForEach(tag =>
-        {
-            AddNDToList(NetData.Create(networkV, tag.ip, tag.mask, indent + "Tag-- " + tag.Text));
-        });
+        network
+            .GetTags()
+            .ForEach(tag =>
+            {
+                AddNDToList(
+                    NetData.Create(networkV, tag.ip, tag.mask, indent + "Tag-- " + tag.Text)
+                );
+            });
         PushNetDataList();
     }
 
     static NetworkVisualization SpawnNetworkVisualizer(Network network)
     {
         GameObject networkVObj = GameObject.Instantiate(_networkVisualizerPrefab);
-        NetworkVisualization networkV = networkVObj.GetComponent<NetworkVisualization>().Init(network);
+        NetworkVisualization networkV = networkVObj
+            .GetComponent<NetworkVisualization>()
+            .Init(network);
         networkVObj.name = "NetworkVisualizer_" + network.GetName();
         networkVObj.transform.parent = NetHolder.instance.rootVTransform;
         networkVObj.transform.SetAsLastSibling();
