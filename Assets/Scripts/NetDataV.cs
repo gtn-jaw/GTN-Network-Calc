@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class NetDataV : Checker
 {
-    [SerializeField] TMP_Text TMPText;
-    [SerializeField] NetData _netData;
+    [SerializeField]
+    TMP_Text TMPText;
+
+    [SerializeField]
+    NetData _netData;
 
     void Start()
     {

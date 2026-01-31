@@ -1,0 +1,67 @@
+name: Dispatch builds and tests
+run-name: 🚀 ${{ github.event.commits[0].message || 'main.yml' }} — ${{ github.run_attempt }}. attempt triggered by @${{ github.triggering_actor }}.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main']
+    tags-ignore: ['**']
+
+jobs:
+  checkIfShouldSkip:
+    permissions:
+      actions: write
+      contents: read
+    name: Check if should skip
+    runs-on: ubuntu-slim
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - name: Skip duplicate actions
+        uses: fkirc/skip-duplicate-actions@v5.3.1
+        id: skip_check
+        with:
+          cancel_others: true
+          paths_ignore: '[".github/**", ".vscode/**", ".gitignore", "LICENSE", "README.md"]'
+          do_not_skip: '["workflow_dispatch", "schedule", "merge_group"]'
+
+  dispatchBuilds:
+    permissions:
+      contents: write
+    needs: checkIfShouldSkip
+    if: needs.checkIfShouldSkip.outputs.should_skip != 'true' || startsWith(github.ref, 'refs/tags/')
+    name: Build
+    strategy:
+      fail-fast: false
+      matrix:
+        targetPlatform:
+         - StandaloneWindows64
+         - StandaloneLinux64
+    uses: ./.github/workflows/build.yml
+    with:
+      targetPlatform: ${{ matrix.targetPlatform }}
+    secrets: inherit
+  # dispatchTests:
+  #   needs: checkIfShouldSkip
+  #   if: needs.checkIfShouldSkip.outputs.should_skip != 'true'
+  #   name: Test
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       testMode:
+  #         - playmode
+  #         - editmode
+  #         - standalone
+  #   permissions:
+  #     checks: write
+  #     contents: read
+  #   uses: ./.github/workflows/test.yml
+  #   with:
+  #     testMode: ${{ matrix.testMode }}
+  #   secrets: inherit
+
+  dispatchRelease:
+    needs: dispatchBuilds
+    name: Release
+    if: startsWith(github.ref, 'refs/tags/')
+    uses: ./.github/workflows/send-release-webhook.yml

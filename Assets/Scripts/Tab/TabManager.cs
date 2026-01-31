@@ -7,16 +7,31 @@ public class TabManager : MonoBehaviour
 {
     public static TabManager Instance;
 
-    [SerializeField] GameObject TabDropdownPrefab;
-    [SerializeField] GameObject TabIPPrefab;
-    [SerializeField] GameObject TabMaskPrefab;
-    [SerializeField] GameObject TabTextPrefab;
-    [SerializeField] Transform TabsParent;
-    [SerializeField] GameObject BG;
-    [SerializeField] TMP_Text ActionName;
+    [SerializeField]
+    GameObject TabDropdownPrefab;
+
+    [SerializeField]
+    GameObject TabIPPrefab;
+
+    [SerializeField]
+    GameObject TabMaskPrefab;
+
+    [SerializeField]
+    GameObject TabTextPrefab;
+
+    [SerializeField]
+    Transform TabsParent;
+
+    [SerializeField]
+    GameObject BG;
+
+    [SerializeField]
+    TMP_Text ActionName;
 
     private TabInput[] tabInputs;
-    [SerializeField]private TabController tabController;
+
+    [SerializeField]
+    private TabController tabController;
     private bool processRulesCoroutineRunning = false;
     private bool tabActive = false;
 
@@ -31,11 +46,10 @@ public class TabManager : MonoBehaviour
         ChangeMask,
         AddTag,
         ChangeName,
-        Info
+        Info,
     }
 
     public TabType CurrentTabType { get; private set; }
-
 
     private void Awake()
     {
@@ -82,34 +96,59 @@ public class TabManager : MonoBehaviour
         {
             case TabType.OpenFile:
                 // Logic to enable Open File tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Dropdown, "File Location", (new string[] { "Program", "Computer" }, 0)),
-                    (TabInput.TabInputType.Dropdown, "File Type", (new string[] { "Text", "JSON" }, 0)),
-                    (TabInput.TabInputType.Text, "File Path", "C:/path/to/file.txt"),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "File Location",
+                            (new string[] { "Program", "Computer" }, 0)
+                        ),
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "File Type",
+                            (new string[] { "Text", "JSON" }, 0)
+                        ),
+                        (TabInput.TabInputType.Text, "File Path", "C:/path/to/file.txt"),
+                    }
+                );
 
                 tabController.RemoveAllRules();
 
                 tabController.NewRule(
                     // When "File Location" dropdown value equals "Program" then hide "File Path"
-                    sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Location") },
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Location"),
+                    },
                     valuesToCompare: new string[] { "Program" },
-                    targetInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Path") },
+                    targetInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Path"),
+                    },
                     actionType: TabController.RuleActionType.Hide
                 );
 
                 tabController.NewRule(
                     // When "File Location" dropdown value equals "Computer" then show "File Path"
-                    sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Location") },
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Location"),
+                    },
                     valuesToCompare: new string[] { "Computer" },
-                    targetInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Path") },
+                    targetInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Path"),
+                    },
                     actionType: TabController.RuleActionType.Show
                 );
 
                 tabController.NewRule(
                     // When "File Location" dropdown value equals "Program" then display {saved networks} in "File Type"
-                    sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Location") },
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Location"),
+                    },
                     valuesToCompare: new string[] { "Program" },
                     targetInput: tabInputs.First(i => i.GetFieldName() == "File Type"),
                     valueToChange: (new string[] { "NetSet1", "NetSet9", "NetSet4" }, 0),
@@ -117,52 +156,79 @@ public class TabManager : MonoBehaviour
                 );
 
                 tabController.NewRule(
-                   // When "File Location" dropdown value equals "Computer" then display {"Text", "JSON"} in "File Type"
-                   sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Location") },
-                   valuesToCompare: new string[] { "Computer" },
-                   targetInput: tabInputs.First(i => i.GetFieldName() == "File Type"),
-                   valueToChange: (new string[] { "Text", "JSON" }, 0),
-                   actionType: TabController.RuleActionType.ChangeValue
-               );
+                    // When "File Location" dropdown value equals "Computer" then display {"Text", "JSON"} in "File Type"
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Location"),
+                    },
+                    valuesToCompare: new string[] { "Computer" },
+                    targetInput: tabInputs.First(i => i.GetFieldName() == "File Type"),
+                    valueToChange: (new string[] { "Text", "JSON" }, 0),
+                    actionType: TabController.RuleActionType.ChangeValue
+                );
 
                 tabController.Reload();
 
                 break;
             case TabType.NewFile:
                 // Logic to enable New File tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Text, "Name", "name"),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (TabInput.TabInputType.Text, "Name", "name"),
+                    }
+                );
 
                 tabController.RemoveAllRules();
                 tabController.Reload();
                 break;
             case TabType.SaveFile:
                 // Logic to enable Save File tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Dropdown, "File Location", (new string[] { "Program", "Computer" }, 0)),
-                    (TabInput.TabInputType.Dropdown, "File Type", (new string[] { "Text", "JSON" }, 0)),
-                    (TabInput.TabInputType.Text, "File Path", "C:/path/to/file.txt"),
-                    (TabInput.TabInputType.Text, "Change file name", "name"),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "File Location",
+                            (new string[] { "Program", "Computer" }, 0)
+                        ),
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "File Type",
+                            (new string[] { "Text", "JSON" }, 0)
+                        ),
+                        (TabInput.TabInputType.Text, "File Path", "C:/path/to/file.txt"),
+                        (TabInput.TabInputType.Text, "Change file name", "name"),
+                    }
+                );
 
                 tabController.RemoveAllRules();
 
                 tabController.NewRule(
                     // When "File Location" dropdown value equals "Program" then hide "File Path"
-                    sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Location") },
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Location"),
+                    },
                     valuesToCompare: new string[] { "Program" },
-                    targetInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Path") },
+                    targetInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Path"),
+                    },
                     actionType: TabController.RuleActionType.Hide
                 );
 
                 tabController.NewRule(
                     // When "File Location" dropdown value equals "Computer" then show "File Path"
-                    sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Location") },
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Location"),
+                    },
                     valuesToCompare: new string[] { "Computer" },
-                    targetInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "File Path") },
+                    targetInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "File Path"),
+                    },
                     actionType: TabController.RuleActionType.Show
                 );
 
@@ -170,12 +236,14 @@ public class TabManager : MonoBehaviour
                 break;
             case TabType.AddNet:
                 // Logic to enable Add Net tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Text, "Name", "name"),
-                    (TabInput.TabInputType.IP, "IP", new IP("192.168.0.0")),
-                    (TabInput.TabInputType.Mask, "Mask", new Mask("255.255.255.0")),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (TabInput.TabInputType.Text, "Name", "name"),
+                        (TabInput.TabInputType.IP, "IP", new IP("192.168.0.0")),
+                        (TabInput.TabInputType.Mask, "Mask", new Mask("255.255.255.0")),
+                    }
+                );
 
                 tabController.RemoveAllRules();
                 tabController.Reload();
@@ -183,10 +251,23 @@ public class TabManager : MonoBehaviour
                 break;
             case TabType.RemoveNet:
                 // Logic to enable Remove Net tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Dropdown, "Base networks", (NetHolder.GetNetworkData().GetNetworkBases().Select(n => n.GetName()).ToArray(), 0)),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "Base networks",
+                            (
+                                NetHolder
+                                    .GetNetworkData()
+                                    .GetNetworkBases()
+                                    .Select(n => n.GetName())
+                                    .ToArray(),
+                                0
+                            )
+                        ),
+                    }
+                );
 
                 tabController.RemoveAllRules();
                 tabController.Reload();
@@ -194,82 +275,168 @@ public class TabManager : MonoBehaviour
                 break;
             case TabType.ChangeIP:
                 // Logic to enable Change IP tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Dropdown, "Base networks", (NetHolder.GetNetworkData().GetNetworkBases().Select(n => n.GetName()).ToArray(), 0)),
-                    (TabInput.TabInputType.IP, "IP", new IP("192.168.0.0")),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "Base networks",
+                            (
+                                NetHolder
+                                    .GetNetworkData()
+                                    .GetNetworkBases()
+                                    .Select(n => n.GetName())
+                                    .ToArray(),
+                                0
+                            )
+                        ),
+                        (TabInput.TabInputType.IP, "IP", new IP("192.168.0.0")),
+                    }
+                );
 
                 tabController.RemoveAllRules();
-                
+
                 tabController.NewRule(
-                   // When "Base networks" dropdown value changes then display its IP in "IP"
-                   sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "Base networks") },
-                   targetInput: tabInputs.First(i => i.GetFieldName() == "IP"),
-                   valueToChangeFunc: (() => {
-                       string selectedNetworkStr = (string)tabInputs.First(i => i.GetFieldName() == "Base networks").GetCurrentValue();
-                       Network selectedNetwork = NetHolder.GetNetworkData().GetNetworkBases().FirstOrDefault(n => n.GetName() == selectedNetworkStr);
-                       return selectedNetwork != null ? selectedNetwork.GetIP() : new IP("999.999.999.999");
-                   }),
-                   actionType: TabController.RuleActionType.ChangeValue
-               );
+                    // When "Base networks" dropdown value changes then display its IP in "IP"
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "Base networks"),
+                    },
+                    targetInput: tabInputs.First(i => i.GetFieldName() == "IP"),
+                    valueToChangeFunc: (
+                        () =>
+                        {
+                            string selectedNetworkStr = (string)
+                                tabInputs
+                                    .First(i => i.GetFieldName() == "Base networks")
+                                    .GetCurrentValue();
+                            Network selectedNetwork = NetHolder
+                                .GetNetworkData()
+                                .GetNetworkBases()
+                                .FirstOrDefault(n => n.GetName() == selectedNetworkStr);
+                            return selectedNetwork != null
+                                ? selectedNetwork.GetIP()
+                                : new IP("999.999.999.999");
+                        }
+                    ),
+                    actionType: TabController.RuleActionType.ChangeValue
+                );
 
                 tabController.Reload();
-                
+
                 break;
             case TabType.ChangeMask:
                 // Logic to enable Change Mask tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Dropdown, "Base networks", (NetHolder.GetNetworkData().GetNetworkBases().Select(n => n.GetName()).ToArray(), 0)),
-                    (TabInput.TabInputType.Mask, "Mask", new Mask("255.255.255.0")),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "Base networks",
+                            (
+                                NetHolder
+                                    .GetNetworkData()
+                                    .GetNetworkBases()
+                                    .Select(n => n.GetName())
+                                    .ToArray(),
+                                0
+                            )
+                        ),
+                        (TabInput.TabInputType.Mask, "Mask", new Mask("255.255.255.0")),
+                    }
+                );
 
                 tabController.RemoveAllRules();
-                
+
                 tabController.NewRule(
-                   // When "Base networks" dropdown value changes then display its IP in "IP"
-                   sourceInputs: new TabInput[] { tabInputs.First(i => i.GetFieldName() == "Base networks") },
-                   targetInput: tabInputs.First(i => i.GetFieldName() == "Mask"),
-                   valueToChangeFunc: (() => {
-                       string selectedNetworkStr = (string)tabInputs.First(i => i.GetFieldName() == "Base networks").GetCurrentValue();
-                       Network selectedNetwork = NetHolder.GetNetworkData().GetNetworkBases().FirstOrDefault(n => n.GetName() == selectedNetworkStr);
-                       return selectedNetwork != null ? selectedNetwork.GetMask() : new Mask("999.999.999.999");
-                   }),
-                   actionType: TabController.RuleActionType.ChangeValue
-               );
+                    // When "Base networks" dropdown value changes then display its IP in "IP"
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "Base networks"),
+                    },
+                    targetInput: tabInputs.First(i => i.GetFieldName() == "Mask"),
+                    valueToChangeFunc: (
+                        () =>
+                        {
+                            string selectedNetworkStr = (string)
+                                tabInputs
+                                    .First(i => i.GetFieldName() == "Base networks")
+                                    .GetCurrentValue();
+                            Network selectedNetwork = NetHolder
+                                .GetNetworkData()
+                                .GetNetworkBases()
+                                .FirstOrDefault(n => n.GetName() == selectedNetworkStr);
+                            return selectedNetwork != null
+                                ? selectedNetwork.GetMask()
+                                : new Mask("999.999.999.999");
+                        }
+                    ),
+                    actionType: TabController.RuleActionType.ChangeValue
+                );
 
                 tabController.Reload();
                 break;
             case TabType.AddTag:
                 // Logic to enable Add Tag tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Dropdown, "Base networks", (NetHolder.GetNetworkData().GetNetworkBases().Select(n => n.GetName()).ToArray(), 0)),
-                    (TabInput.TabInputType.Text, "Tag name", "name"),
-                    (TabInput.TabInputType.IP, "IP", new IP("192.168.0.0")),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "Base networks",
+                            (
+                                NetHolder
+                                    .GetNetworkData()
+                                    .GetNetworkBases()
+                                    .Select(n => n.GetName())
+                                    .ToArray(),
+                                0
+                            )
+                        ),
+                        (TabInput.TabInputType.Text, "Tag name", "name"),
+                        (TabInput.TabInputType.IP, "IP", new IP("192.168.0.0")),
+                    }
+                );
 
                 tabController.RemoveAllRules();
                 tabController.Reload();
                 break;
             case TabType.ChangeName:
                 // Logic to enable Change Name tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Dropdown, "Base networks", (NetHolder.GetNetworkData().GetNetworkBases().Select(n => n.GetName()).ToArray(), 0)),
-                    (TabInput.TabInputType.Text, "New name", "name"),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Dropdown,
+                            "Base networks",
+                            (
+                                NetHolder
+                                    .GetNetworkData()
+                                    .GetNetworkBases()
+                                    .Select(n => n.GetName())
+                                    .ToArray(),
+                                0
+                            )
+                        ),
+                        (TabInput.TabInputType.Text, "New name", "name"),
+                    }
+                );
 
                 tabController.RemoveAllRules();
                 tabController.Reload();
                 break;
             case TabType.Info:
                 // Logic to enable Info tab
-                tabInputs = CreateTabs(new (TabInput.TabInputType, string, object)[]
-                {
-                    (TabInput.TabInputType.Text, "Info", "Detailed information about the network."),
-                });
+                tabInputs = CreateTabs(
+                    new (TabInput.TabInputType, string, object)[]
+                    {
+                        (
+                            TabInput.TabInputType.Text,
+                            "Info",
+                            "Detailed information about the network."
+                        ),
+                    }
+                );
 
                 tabController.RemoveAllRules();
                 tabController.Reload();
@@ -330,7 +497,9 @@ public class TabManager : MonoBehaviour
         EnableTabType(TabType.Info);
     }
 
-    public TabInput[] CreateTabs((TabInput.TabInputType type, string fieldName, object defaultValue)[] tabDefinitions)
+    public TabInput[] CreateTabs(
+        (TabInput.TabInputType type, string fieldName, object defaultValue)[] tabDefinitions
+    )
     {
         TabInput[] tabs = new TabInput[tabDefinitions.Length];
 
@@ -364,7 +533,8 @@ public class TabManager : MonoBehaviour
 
     private TabDropdownInput CreateDropdownTab(string fieldName, string[] options, int defaultIndex)
     {
-        TabDropdownInput tab = Instantiate(TabDropdownPrefab, TabsParent).GetComponent<TabDropdownInput>();
+        TabDropdownInput tab = Instantiate(TabDropdownPrefab, TabsParent)
+            .GetComponent<TabDropdownInput>();
         tab.transform.localScale = Vector3.one;
         tab.Init(fieldName, options, defaultIndex);
         return tab;

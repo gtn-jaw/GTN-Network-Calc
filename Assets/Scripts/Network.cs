@@ -4,12 +4,21 @@ using System.Collections.Generic;
 [Serializable]
 public class Network
 {
-    [UnityEngine.SerializeField] string _name;
-    [UnityEngine.SerializeField] IP _ip;
-    [UnityEngine.SerializeField] Mask _mask;
-    [UnityEngine.SerializeField] Network _parentNetwork;
-    [UnityEngine.SerializeField] List<Tag> _tags = new List<Tag>();
-    
+    [UnityEngine.SerializeField]
+    string _name;
+
+    [UnityEngine.SerializeField]
+    IP _ip;
+
+    [UnityEngine.SerializeField]
+    Mask _mask;
+
+    [UnityEngine.SerializeField]
+    Network _parentNetwork;
+
+    [UnityEngine.SerializeField]
+    List<Tag> _tags = new List<Tag>();
+
     public Network(string name, IP ip, Mask mask)
     {
         this._name = name;

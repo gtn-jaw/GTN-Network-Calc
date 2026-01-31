@@ -9,7 +9,7 @@ public class TabInput : MonoBehaviour
         Dropdown,
         IP,
         Mask,
-        Text
+        Text,
     }
 
     protected TabInputType _inputType;
@@ -153,7 +153,8 @@ public class TabInput : MonoBehaviour
         {
             case TabInputType.Dropdown:
                 (string[] options, int index) dropdownValue = ((string[] options, int index))value;
-                GetComponent<TabDropdownInput>().SetValues(dropdownValue.options, dropdownValue.index);
+                GetComponent<TabDropdownInput>()
+                    .SetValues(dropdownValue.options, dropdownValue.index);
                 break;
             case TabInputType.IP:
                 GetComponent<TabIPInput>().SetValue((IP)value);

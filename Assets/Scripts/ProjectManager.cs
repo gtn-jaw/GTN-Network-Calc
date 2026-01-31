@@ -5,13 +5,14 @@ using UnityEngine;
 public class ProjectManager
 {
     public static EState appState = EState.START;
+
     public enum EState
     {
         START,
         BEFORESTART,
         AFTERSTART,
         RUNNING,
-        EXITING
+        EXITING,
     }
 
     public static event Action<EState> OnAppStateChanged;
@@ -50,9 +51,7 @@ public class ProjectManager
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     async Task AfterSceneLoad()
     {
-        await WaitUntil(() =>
-            appState == EState.BEFORESTART
-        );
+        await WaitUntil(() => appState == EState.BEFORESTART);
         UpdateAppState(EState.AFTERSTART);
     }
 

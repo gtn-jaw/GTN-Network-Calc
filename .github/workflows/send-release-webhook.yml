@@ -1,0 +1,34 @@
+name: Notify about release
+
+on:
+  release:
+    types: [published]
+  workflow_call:
+    inputs:
+      releaseUrl:
+        description: 'The url to the release'
+        required: false
+        type: string
+        default: 'https://github.com/GTN-Main/Whispering-Leaves/releases/latest'
+      releaseTag:
+        description: 'The tag of the release'
+        required: false
+        type: string
+        default: 'latest'
+
+jobs:
+  notifyAboutRelease:
+    name: Send discord webhook if release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send discord webhook (release only)
+        uses: tsickert/discord-webhook@v7.0.0
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
+          embed-title: 'Nowa wersja kalkulatora sieci!'
+          embed-url: ${{ github.event.release.html_url || inputs.releaseUrl }}
+          embed-description: |
+            Właśnie wyszła nowa wersja kalkulatora! Teraz możesz podzielić swoją sieć na jeszcze więcej podsieci.
+            Możesz go pobrać [tutaj](${{ github.event.release.html_url || inputs.releaseUrl }}). Wersja `${{ github.event.release.tag_name || inputs.releaseTag }}`.
+          embed-color: 1103120
+          embed-thumbnail-url: https://static.wikia.nocookie.net/nicos-nextbots/images/0/02/Chilly_high_res.png/

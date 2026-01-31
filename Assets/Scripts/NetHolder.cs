@@ -5,13 +5,16 @@ public class NetHolder : MonoBehaviour
     static NetDataV _checkedNetDataV;
     static NetworkData _networkData;
 
-    [SerializeField] NetworkData _networkDataInspector;
+    [SerializeField]
+    NetworkData _networkDataInspector;
+
 #if UNITY_EDITOR
     void Update()
     {
         _networkDataInspector = _networkData;
     }
 #endif
+
     public Transform rootVTransform;
 
     public static NetHolder instance = new NetHolder();
@@ -22,7 +25,7 @@ public class NetHolder : MonoBehaviour
         {
             instance = this;
         }
-        else if(instance != this)
+        else if (instance != this)
         {
             Destroy(gameObject);
         }

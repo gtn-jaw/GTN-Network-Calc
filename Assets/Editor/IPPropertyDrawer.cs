@@ -1,6 +1,6 @@
+using System.Reflection;
 using UnityEditor;
 using UnityEngine;
-using System.Reflection;
 
 [CustomPropertyDrawer(typeof(IP))]
 public class IPPropertyDrawer : PropertyDrawer
@@ -21,8 +21,20 @@ public class IPPropertyDrawer : PropertyDrawer
         }
 
         // Define rectangles for each part of the drawer
-        Rect ipStringRect = new Rect(position.x, position.y, position.width, EditorGUIUtility.singleLineHeight);
-        Rect ipArrayRect = new Rect(position.x, position.y + EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing, position.width, EditorGUI.GetPropertyHeight(ipField));
+        Rect ipStringRect = new Rect(
+            position.x,
+            position.y,
+            position.width,
+            EditorGUIUtility.singleLineHeight
+        );
+        Rect ipArrayRect = new Rect(
+            position.x,
+            position.y
+                + EditorGUIUtility.singleLineHeight
+                + EditorGUIUtility.standardVerticalSpacing,
+            position.width,
+            EditorGUI.GetPropertyHeight(ipField)
+        );
 
         // Draw the non-editable IP string
         string ipString = GetString(ipField);
@@ -47,7 +59,9 @@ public class IPPropertyDrawer : PropertyDrawer
         float arrayHeight = EditorGUI.GetPropertyHeight(ipField);
 
         // Total height: Label height + Spacing + Dynamic array height
-        return EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + arrayHeight;
+        return EditorGUIUtility.singleLineHeight
+            + EditorGUIUtility.standardVerticalSpacing
+            + arrayHeight;
     }
 
     // Helper method to get the byte array from the serialized property
@@ -64,8 +78,10 @@ public class IPPropertyDrawer : PropertyDrawer
     // Helper method to validate the `_ip` byte array
     private bool ValidateIP(SerializedProperty property)
     {
-        if (property == null) return false;
-        if (property.arraySize != 4) return false;
+        if (property == null)
+            return false;
+        if (property.arraySize != 4)
+            return false;
 
         for (int i = 0; i < property.arraySize; i++)
         {

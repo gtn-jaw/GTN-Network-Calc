@@ -3,19 +3,18 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-
 [CreateAssetMenu(fileName = "FolderObject", menuName = "FolderScriptableObject", order = 1)]
 public class FolderObject : ScriptableObject
 {
     [Header("Texture")]
     [Tooltip("Folder Icon")]
     public Texture2D texture;
+
     [Space(8)]
-    
     [Header("List of names")]
     [Tooltip("List of names you wish for the icon to apply to")]
     public List<string> names = new();
-     
+
     private void OnValidate()
     {
         if (texture != null)
@@ -28,12 +27,26 @@ public class FolderObject : ScriptableObject
             {
                 names[0] = texture.name;
             }
-        } 
-        else 
+        }
+        else
         {
             if (AssetDatabase.FindAssets(name + " t:texture2D").Length > 0)
             {
-                texture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets(name + " t:texture2D", new[] { "Assets/FolderIcons", "Assets/FolderIcons/Icons", "Assets/FolderIcons/Textures" } )[0]), typeof(Texture2D));
+                texture = (Texture2D)
+                    AssetDatabase.LoadAssetAtPath(
+                        AssetDatabase.GUIDToAssetPath(
+                            AssetDatabase.FindAssets(
+                                name + " t:texture2D",
+                                new[]
+                                {
+                                    "Assets/FolderIcons",
+                                    "Assets/FolderIcons/Icons",
+                                    "Assets/FolderIcons/Textures",
+                                }
+                            )[0]
+                        ),
+                        typeof(Texture2D)
+                    );
                 if (names.Count <= 0)
                 {
                     names.Add(texture.name);
@@ -45,10 +58,15 @@ public class FolderObject : ScriptableObject
             }
             else
             {
-                Debug.LogWarning(@"Error: Couldn't find Texture2D sharing the name """ + name + @""", please assign one manually.");
+                Debug.LogWarning(
+                    @"Error: Couldn't find Texture2D sharing the name """
+                        + name
+                        + @""", please assign one manually."
+                );
             }
         }
     }
+
     private void OnEnable()
     {
         if (texture != null)
@@ -66,7 +84,21 @@ public class FolderObject : ScriptableObject
         {
             if (AssetDatabase.FindAssets(name + " t:texture2D").Length > 0)
             {
-                texture = (Texture2D)AssetDatabase.LoadAssetAtPath(AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets(name + " t:texture2D", new[] { "Assets/FolderIcons", "Assets/FolderIcons/Icons", "Assets/FolderIcons/Textures" })[0]), typeof(Texture2D));
+                texture = (Texture2D)
+                    AssetDatabase.LoadAssetAtPath(
+                        AssetDatabase.GUIDToAssetPath(
+                            AssetDatabase.FindAssets(
+                                name + " t:texture2D",
+                                new[]
+                                {
+                                    "Assets/FolderIcons",
+                                    "Assets/FolderIcons/Icons",
+                                    "Assets/FolderIcons/Textures",
+                                }
+                            )[0]
+                        ),
+                        typeof(Texture2D)
+                    );
                 if (names.Count <= 0)
                 {
                     names.Add(texture.name);
@@ -78,7 +110,11 @@ public class FolderObject : ScriptableObject
             }
             else
             {
-                Debug.LogWarning(@"Error: Couldn't find Texture2D sharing the name """ + name + @""", please assign one manually.");
+                Debug.LogWarning(
+                    @"Error: Couldn't find Texture2D sharing the name """
+                        + name
+                        + @""", please assign one manually."
+                );
             }
         }
     }
@@ -87,7 +123,8 @@ public class FolderObject : ScriptableObject
 [CustomEditor(typeof(FolderObject))]
 public class FolderObjectEditor : UnityEditor.Editor
 {
-    public static void CreateAsset<FolderObject>() where FolderObject : ScriptableObject
+    public static void CreateAsset<FolderObject>()
+        where FolderObject : ScriptableObject
     {
         FolderObject asset = ScriptableObject.CreateInstance<FolderObject>();
 
@@ -99,10 +136,15 @@ public class FolderObjectEditor : UnityEditor.Editor
         }
         else if (Path.GetExtension(path) != "")
         {
-            path = path.Replace(Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)), "");
+            path = path.Replace(
+                Path.GetFileName(AssetDatabase.GetAssetPath(Selection.activeObject)),
+                ""
+            );
         }
 
-        string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(path + "/New " + typeof(FolderObject).ToString() + ".asset");
+        string assetPathAndName = AssetDatabase.GenerateUniqueAssetPath(
+            path + "/New " + typeof(FolderObject).ToString() + ".asset"
+        );
 
         AssetDatabase.CreateAsset(asset, assetPathAndName);
         AssetDatabase.SaveAssets();
@@ -111,7 +153,12 @@ public class FolderObjectEditor : UnityEditor.Editor
         Selection.activeObject = asset;
     }
 
-    public override Texture2D RenderStaticPreview(string assetPath, Object[] subAssets, int width, int height)
+    public override Texture2D RenderStaticPreview(
+        string assetPath,
+        Object[] subAssets,
+        int width,
+        int height
+    )
     {
         FolderObject FolderObject = (FolderObject)target;
 

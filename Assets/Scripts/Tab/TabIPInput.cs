@@ -3,10 +3,17 @@ using UnityEngine;
 
 public class TabIPInput : TabInput
 {
-    [SerializeField] TMP_Text FieldName;
-    [SerializeField] TMP_InputField[] IPBytes;
-    [SerializeField] Color ValidColor = Color.white;
-    [SerializeField] Color InvalidColor = Color.red;
+    [SerializeField]
+    TMP_Text FieldName;
+
+    [SerializeField]
+    TMP_InputField[] IPBytes;
+
+    [SerializeField]
+    Color ValidColor = Color.white;
+
+    [SerializeField]
+    Color InvalidColor = Color.red;
 
     public void Init(string fieldName, IP defaultIP)
     {

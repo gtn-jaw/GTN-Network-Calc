@@ -7,28 +7,28 @@ public class NetManagement
 {
     public static uint ToUInt32(IP ip)
     {
-        return ((uint)ip.GetIPAsBytes()[0] << 24) |
-               ((uint)ip.GetIPAsBytes()[1] << 16) |
-               ((uint)ip.GetIPAsBytes()[2] << 8) |
-               ip.GetIPAsBytes()[3];
+        return ((uint)ip.GetIPAsBytes()[0] << 24)
+            | ((uint)ip.GetIPAsBytes()[1] << 16)
+            | ((uint)ip.GetIPAsBytes()[2] << 8)
+            | ip.GetIPAsBytes()[3];
     }
 
     public static uint ToUInt32(Mask mask)
     {
-        return ((uint)mask.GetMaskAsBytes()[0] << 24) |
-               ((uint)mask.GetMaskAsBytes()[1] << 16) |
-               ((uint)mask.GetMaskAsBytes()[2] << 8) |
-               mask.GetMaskAsBytes()[3];
+        return ((uint)mask.GetMaskAsBytes()[0] << 24)
+            | ((uint)mask.GetMaskAsBytes()[1] << 16)
+            | ((uint)mask.GetMaskAsBytes()[2] << 8)
+            | mask.GetMaskAsBytes()[3];
     }
 
     private static byte[] ConvertUInt32ToBytes(uint value)
     {
         return new byte[]
         {
-        (byte)((value >> 24) & 0xFF),
-        (byte)((value >> 16) & 0xFF),
-        (byte)((value >> 8) & 0xFF),
-        (byte)(value & 0xFF)
+            (byte)((value >> 24) & 0xFF),
+            (byte)((value >> 16) & 0xFF),
+            (byte)((value >> 8) & 0xFF),
+            (byte)(value & 0xFF),
         };
     }
 
@@ -52,9 +52,14 @@ public class NetManagement
     public Network CombineNetworks(Network first, Network second)
     {
         // Ensure both networks have the same mask
-        if (first.GetMask().GetMaskAsStringDottedNotation() != second.GetMask().GetMaskAsStringDottedNotation())
+        if (
+            first.GetMask().GetMaskAsStringDottedNotation()
+            != second.GetMask().GetMaskAsStringDottedNotation()
+        )
         {
-            throw new System.Exception("Networks cannot be combined if they have different subnet masks.");
+            throw new System.Exception(
+                "Networks cannot be combined if they have different subnet masks."
+            );
         }
 
         // Get the parent network of the two by comparing their IPs
@@ -102,12 +107,18 @@ public class NetManagement
 
     private string ConvertToBinary(IP ip)
     {
-        return string.Join("", ip.GetIPAsBytes().Select(x => Convert.ToString(x, 2).PadLeft(8, '0')));
+        return string.Join(
+            "",
+            ip.GetIPAsBytes().Select(x => Convert.ToString(x, 2).PadLeft(8, '0'))
+        );
     }
 
     public static List<Network> SortNetworks(List<Network> networks)
     {
-        return networks.OrderBy(n => n.GetIP().GetIPAsUInt32()).ThenBy(n => n.GetMask().GetMaskAsUInt32()).ToList();
+        return networks
+            .OrderBy(n => n.GetIP().GetIPAsUInt32())
+            .ThenBy(n => n.GetMask().GetMaskAsUInt32())
+            .ToList();
     }
 
     public static List<Network> SubnetNetwork(Network network, Mask newMask)
@@ -115,7 +126,9 @@ public class NetManagement
         // Validate that the new mask is larger (smaller subnet size)
         if (newMask.GetMaskBitsCount() <= network.GetMask().GetMaskBitsCount())
         {
-            throw new System.Exception($"New mask must be larger than the current network mask to create subnets.\nCurrent Mask: {network.GetMask().GetMaskAsStringDottedNotation()}, New Mask: {newMask.GetMaskAsStringDottedNotation()}");
+            throw new System.Exception(
+                $"New mask must be larger than the current network mask to create subnets.\nCurrent Mask: {network.GetMask().GetMaskAsStringDottedNotation()}, New Mask: {newMask.GetMaskAsStringDottedNotation()}"
+            );
         }
 
         // Get the starting IP of the parent network
@@ -170,7 +183,10 @@ public class NetManagement
         return new IP(nextIPBytes);
     }
 
-    public static void ApplyNetChanges(List<Network> networks_toDelete, List<Network> networks_toAdd)
+    public static void ApplyNetChanges(
+        List<Network> networks_toDelete,
+        List<Network> networks_toAdd
+    )
     {
         NetworkData networkData = NetHolder.GetNetworkData();
 
@@ -192,10 +208,18 @@ public class NetManagement
 
         return true;
     }
-    
+
     static readonly byte[] validMaskBytes = new byte[9]
     {
-        0, 128, 192, 224, 240, 248, 252, 254, 255
+        0,
+        128,
+        192,
+        224,
+        240,
+        248,
+        252,
+        254,
+        255,
     };
 
     public static bool ValidateMaskByte(byte bite)

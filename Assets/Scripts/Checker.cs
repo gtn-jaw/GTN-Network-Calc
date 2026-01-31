@@ -5,6 +5,7 @@ public abstract class Checker : MonoBehaviour, IPointerClickHandler
 {
     protected NetDataV _netDataV;
     bool _isChecked = false;
+
     protected void InitChecker(NetDataV netDataV)
     {
         _netDataV = netDataV;
@@ -13,7 +14,7 @@ public abstract class Checker : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         NetData.EDataType dataType = _netDataV.GetNetData().GetDataType();
-        // Replace _netDataV in NetHolder 
+        // Replace _netDataV in NetHolder
     }
 
     public bool IsChecked()
