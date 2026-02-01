@@ -262,12 +262,16 @@ public class TabController
     {
         End();
         _fieldsToRulesRun.Clear();
-        _rules.SelectMany(r => r._sourceInputs).Distinct().ToList().ForEach(tabInput =>
-        {
-            //UnityEngine.Debug.Log("Registering field for rules running: " + tabInput.GetFieldName());
-            _fieldsToRulesRun.Add(tabInput, true);
-            tabInput.OnValueChanged += (input) => _fieldsToRulesRun[input] = true;
-        });
+        _rules
+            .SelectMany(r => r._sourceInputs)
+            .Distinct()
+            .ToList()
+            .ForEach(tabInput =>
+            {
+                //UnityEngine.Debug.Log("Registering field for rules running: " + tabInput.GetFieldName());
+                _fieldsToRulesRun.Add(tabInput, true);
+                tabInput.OnValueChanged += (input) => _fieldsToRulesRun[input] = true;
+            });
 
         //UnityEngine.Debug.Log($"TabController reloaded. Fields to run rules on change: {_fieldsToRulesRun.Count}");
         /*foreach (var field in _fieldsToRulesRun)
@@ -296,7 +300,12 @@ public class TabController
     /// <para>actionType: RuleActionType.type</para>
     /// <para>);</para>
     /// </summary>
-    public void NewRule(TabInput[] sourceInputs, object[] valuesToCompare, TabInput[] targetInputs, RuleActionType actionType)
+    public void NewRule(
+        TabInput[] sourceInputs,
+        object[] valuesToCompare,
+        TabInput[] targetInputs,
+        RuleActionType actionType
+    )
     {
         if (actionType == RuleActionType.Show)
         {
@@ -324,7 +333,13 @@ public class TabController
     /// <para>actionType: RuleActionType.type</para>
     /// <para>);</para>
     /// </summary>
-    public void NewRule(TabInput[] sourceInputs, object[] valuesToCompare, TabInput targetInput, object valueToChange, RuleActionType actionType)
+    public void NewRule(
+        TabInput[] sourceInputs,
+        object[] valuesToCompare,
+        TabInput targetInput,
+        object valueToChange,
+        RuleActionType actionType
+    )
     {
         if (actionType == RuleActionType.ChangeValue)
         {
@@ -351,7 +366,12 @@ public class TabController
     /// <para>actionType: RuleActionType.type</para>
     /// <para>);</para>
     /// </summary>
-    public void NewRule(TabInput[] sourceInputs, TabInput targetInput, object valueToChange, RuleActionType actionType)
+    public void NewRule(
+        TabInput[] sourceInputs,
+        TabInput targetInput,
+        object valueToChange,
+        RuleActionType actionType
+    )
     {
         if (actionType == RuleActionType.ChangeValue)
         {
@@ -373,7 +393,12 @@ public class TabController
     /// <para>actionType: RuleActionType.type</para>
     /// <para>);</para>
     /// </summary>
-    public void NewRule(TabInput[] sourceInputs, TabInput targetInput, Func<object> valueToChangeFunc, RuleActionType actionType)
+    public void NewRule(
+        TabInput[] sourceInputs,
+        TabInput targetInput,
+        Func<object> valueToChangeFunc,
+        RuleActionType actionType
+    )
     {
         if (actionType == RuleActionType.ChangeValue)
         {

@@ -99,7 +99,7 @@ public class TabManager : MonoBehaviour
         CurrentTabType = TabType.None;
 
         processRulesCoroutineRunning = false;
-        tabController.StopRunningRules();       
+        tabController.StopRunningRules();
         tabController.RemoveAllRules();
         tabController.Reload();
 
