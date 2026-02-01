@@ -24,7 +24,7 @@ jobs:
           clean: false
       - name: Restore library from cache
         run: |
-          CACHE_DIR="/root/unity-cache/Library-${{ inputs.targetPlatform }}"
+          CACHE_DIR="/root/unity-cache/${{ github.repository_id }}/Library-${{ inputs.targetPlatform }}"
           if [ -d "Library" ]; then
              rm -rf Library
           fi
