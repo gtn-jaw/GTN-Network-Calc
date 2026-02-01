@@ -74,7 +74,8 @@ public class TabMaskInput : TabInput
                 newMaskBytes[i] = byte.Parse(MaskBytes[i].text);
                 _mask.SetMask(newMaskBytes);
             }
-            else priviousBytesValid = false;
+            else
+                priviousBytesValid = false;
         }
 
         UpdateVisuals();

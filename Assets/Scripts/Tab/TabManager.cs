@@ -288,7 +288,13 @@ public class TabManager : MonoBehaviour
                         (
                             TabInput.TabInputType.Dropdown,
                             "Network IP",
-                            (NetManagement.GetNetworkIds(new IP("192.168.0.0"), new Mask("255.255.255.0")).Select(id => NetManagement.UInt32ToIPString(id)).ToArray(), 0)
+                            (
+                                NetManagement
+                                    .GetNetworkIds(new IP("192.168.0.0"), new Mask("255.255.255.0"))
+                                    .Select(id => NetManagement.UInt32ToIPString(id))
+                                    .ToArray(),
+                                0
+                            )
                         ),
                     }
                 );
@@ -310,10 +316,14 @@ public class TabManager : MonoBehaviour
                                     .First(i => i.GetFieldName() == "Start IP")
                                     .GetCurrentValue();
                             Mask sourceMask = (Mask)
-                                tabInputs
-                                    .First(i => i.GetFieldName() == "Mask")
-                                    .GetCurrentValue();
-                            return (NetManagement.GetNetworkIds(sourceIP, sourceMask).Select(id => NetManagement.UInt32ToIPString(id)).ToArray(), 0);
+                                tabInputs.First(i => i.GetFieldName() == "Mask").GetCurrentValue();
+                            return (
+                                NetManagement
+                                    .GetNetworkIds(sourceIP, sourceMask)
+                                    .Select(id => NetManagement.UInt32ToIPString(id))
+                                    .ToArray(),
+                                0
+                            );
                         }
                     ),
                     actionType: TabController.RuleActionType.ChangeValue
@@ -334,10 +344,14 @@ public class TabManager : MonoBehaviour
                                     .First(i => i.GetFieldName() == "Start IP")
                                     .GetCurrentValue();
                             Mask sourceMask = (Mask)
-                                tabInputs
-                                    .First(i => i.GetFieldName() == "Mask")
-                                    .GetCurrentValue();
-                            return (NetManagement.GetNetworkIds(sourceIP, sourceMask).Select(id => NetManagement.UInt32ToIPString(id)).ToArray(), 0);
+                                tabInputs.First(i => i.GetFieldName() == "Mask").GetCurrentValue();
+                            return (
+                                NetManagement
+                                    .GetNetworkIds(sourceIP, sourceMask)
+                                    .Select(id => NetManagement.UInt32ToIPString(id))
+                                    .ToArray(),
+                                0
+                            );
                         }
                     ),
                     actionType: TabController.RuleActionType.ChangeValue
@@ -613,26 +627,29 @@ public class TabManager : MonoBehaviour
 
     private TabInput CreateTab(TabInput.TabInputType type, string fieldName, object defaultValue)
     {
-        try{
-        switch (type)
+        try
         {
-            case TabInput.TabInputType.Dropdown:
-                var dropdownData = ((string[], int))defaultValue;
-                return CreateDropdownTab(fieldName, dropdownData.Item1, dropdownData.Item2);
-            case TabInput.TabInputType.IP:
-                return CreateIPTab(fieldName, (IP)defaultValue);
-            case TabInput.TabInputType.Mask:
-                return CreateMaskTab(fieldName, (Mask)defaultValue);
-            case TabInput.TabInputType.Text:
-                return CreateTextTab(fieldName, (string)defaultValue);
-            default:
-                Debug.LogError("Unsupported TabInputType");
-                return null;
+            switch (type)
+            {
+                case TabInput.TabInputType.Dropdown:
+                    var dropdownData = ((string[], int))defaultValue;
+                    return CreateDropdownTab(fieldName, dropdownData.Item1, dropdownData.Item2);
+                case TabInput.TabInputType.IP:
+                    return CreateIPTab(fieldName, (IP)defaultValue);
+                case TabInput.TabInputType.Mask:
+                    return CreateMaskTab(fieldName, (Mask)defaultValue);
+                case TabInput.TabInputType.Text:
+                    return CreateTextTab(fieldName, (string)defaultValue);
+                default:
+                    Debug.LogError("Unsupported TabInputType");
+                    return null;
+            }
         }
-        }
-        catch(System.Exception e)
+        catch (System.Exception e)
         {
-            Debug.LogError($"Error creating tab of type {type} with field name {fieldName} with value of type {defaultValue.GetType()}: {e.Message}");
+            Debug.LogError(
+                $"Error creating tab of type {type} with field name {fieldName} with value of type {defaultValue.GetType()}: {e.Message}"
+            );
             return null;
         }
     }

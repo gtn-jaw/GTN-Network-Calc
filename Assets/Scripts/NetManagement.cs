@@ -18,7 +18,6 @@ public class NetManagement
         return $"{(ip >> 24) & 0xFF}.{(ip >> 16) & 0xFF}.{(ip >> 8) & 0xFF}.{ip & 0xFF}";
     }
 
-
     public static uint ToUInt32(Mask mask)
     {
         return ((uint)mask.GetMaskAsBytes()[0] << 24)
@@ -238,7 +237,8 @@ public class NetManagement
         uint ipVal = ToUInt32(sourceIp);
         uint maskVal = ToUInt32(sourceMask);
         uint step = ~maskVal + 1;
-        if (step == 0) return new uint[] { 0 };
+        if (step == 0)
+            return new uint[] { 0 };
 
         uint currentNetworkId = ipVal & maskVal;
         uint startPoint = (ipVal <= currentNetworkId) ? currentNetworkId : currentNetworkId + step;
@@ -274,7 +274,8 @@ public class NetManagement
         while (result.Count < 100 && current <= limit)
         {
             result.Add(current);
-            if (uint.MaxValue - current < step) break;
+            if (uint.MaxValue - current < step)
+                break;
             current += step;
         }
 

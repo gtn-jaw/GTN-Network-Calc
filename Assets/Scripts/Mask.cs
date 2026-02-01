@@ -26,7 +26,9 @@ public class Mask
     {
         (bool valid, byte[] convertedMask) = ValidateAndConvert(maskList);
         if (!valid)
-            throw new System.Exception($"Invalid Mask byte list. Value: {string.Join(".", maskList)}");
+            throw new System.Exception(
+                $"Invalid Mask byte list. Value: {string.Join(".", maskList)}"
+            );
         _mask = convertedMask;
     }
 
@@ -242,9 +244,9 @@ public class Mask
         Array.Reverse(maskBytesCopy);
         uint val = BitConverter.ToUInt32(maskBytesCopy, 0);
 
-        if (val == 0) return true;
+        if (val == 0)
+            return true;
         uint inv = ~val; // 11110000 -> 00001111
         return (inv & (inv + 1)) == 0; // 00001111 & 00010000 == 0
     }
-
 }

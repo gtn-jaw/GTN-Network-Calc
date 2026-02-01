@@ -18,7 +18,7 @@ public class TabDropdownInput : TabInput
         SetValues(options, defaultIndex);
 
         Dropdown.onValueChanged.AddListener(OnDropdownValueChanged);
-        
+
         _isFieldValid = true;
     }
 
