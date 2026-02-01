@@ -131,8 +131,8 @@ public class TabController
                 if (sourceInputs[i].GetMainValueType() != valuesToCompare[i].GetType())
                     throw new System.Exception("Source input type at index " + i + " does not match value to compare type.");
             }
-            UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
-            UnityEngine.Debug.Log("Value to change type: " + valueToChange.GetType());
+            // UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
+            // UnityEngine.Debug.Log("Value to change type: " + valueToChange.GetType());
             if (targetInput.GetAssignedValueType() != valueToChange.GetType())
                 throw new System.Exception("Target input type does not match value to change type.\nTarget input type: " + targetInput.GetAssignedValueType() + "\nValue to change type: " + valueToChange.GetType());
 
@@ -160,8 +160,8 @@ public class TabController
                 if (sourceInputs[i] == null)
                     throw new System.Exception("Source input at index " + i + " is null.");
             }
-            UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
-            UnityEngine.Debug.Log("Value to change type: " + valueToChange.GetType());
+            // UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
+            //UnityEngine.Debug.Log("Value to change type: " + valueToChange.GetType());
             if (targetInput.GetAssignedValueType() != valueToChange.GetType())
                 throw new System.Exception("Target input type does not match value to change type.\nTarget input type: " + targetInput.GetAssignedValueType() + "\nValue to change type: " + valueToChange.GetType());
 
@@ -189,8 +189,8 @@ public class TabController
                 if (sourceInputs[i] == null)
                     throw new System.Exception("Source input at index " + i + " is null.");
             }
-            UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
-            UnityEngine.Debug.Log("Value to change type: " + funcValue.GetType());
+            // UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
+            // UnityEngine.Debug.Log("Value to change type: " + funcValue.GetType());
             if (targetInput.GetAssignedValueType() != funcValue.GetType())
                 throw new System.Exception("Target input type does not match value to change type.\nTarget input type: " + targetInput.GetAssignedValueType() + "\nValue to change type: " + funcValue.GetType());
 
@@ -216,16 +216,16 @@ public class TabController
         _fieldsToRulesRun.Clear();
         _rules.SelectMany(r => r._sourceInputs).Distinct().ToList().ForEach(tabInput =>
         {
-            UnityEngine.Debug.Log("Registering field for rules running: " + tabInput.GetFieldName());
+            //UnityEngine.Debug.Log("Registering field for rules running: " + tabInput.GetFieldName());
             _fieldsToRulesRun.Add(tabInput, true);
             tabInput.OnValueChanged += (input) => _fieldsToRulesRun[input] = true;
         });
 
-        UnityEngine.Debug.Log($"TabController reloaded. Fields to run rules on change: {_fieldsToRulesRun.Count}");
-        foreach (var field in _fieldsToRulesRun)
+        //UnityEngine.Debug.Log($"TabController reloaded. Fields to run rules on change: {_fieldsToRulesRun.Count}");
+        /*foreach (var field in _fieldsToRulesRun)
         {
             UnityEngine.Debug.Log($" - Field: {field.Key.GetFieldName()}");
-        }
+        }*/
     }
 
     public void End()
@@ -245,10 +245,6 @@ public class TabController
     /// <para>actionType: RuleActionType.type</para>
     /// <para>);</para>
     /// </summary>
-    /// <param name="sourceInputs"></param>
-    /// <param name="valuesToCompare"></param>
-    /// <param name="targetInputs"></param>
-    /// <param name="actionType"></param>
     public void NewRule(TabInput[] sourceInputs, object[] valuesToCompare, TabInput[] targetInputs, RuleActionType actionType)
     {
         if (actionType == RuleActionType.Show)
@@ -274,10 +270,6 @@ public class TabController
     /// <para>actionType: RuleActionType.type</para>
     /// <para>);</para>
     /// </summary>
-    /// <param name="sourceInputs"></param>
-    /// <param name="valuesToCompare"></param>
-    /// <param name="targetInputs"></param>
-    /// <param name="actionType"></param>
     public void NewRule(TabInput[] sourceInputs, object[] valuesToCompare, TabInput targetInput, object valueToChange, RuleActionType actionType)
     {
         if (actionType == RuleActionType.ChangeValue)
@@ -297,10 +289,6 @@ public class TabController
     /// <para>actionType: RuleActionType.type</para>
     /// <para>);</para>
     /// </summary>
-    /// <param name="sourceInputs"></param>
-    /// <param name="valuesToCompare"></param>
-    /// <param name="targetInputs"></param>
-    /// <param name="actionType"></param>
     public void NewRule(TabInput[] sourceInputs, TabInput targetInput, object valueToChange, RuleActionType actionType)
     {
         if (actionType == RuleActionType.ChangeValue)
@@ -311,6 +299,15 @@ public class TabController
         else throw new System.Exception($"Wrong method syntax for this rule action type: {actionType}");
     }
 
+    /// <summary>
+    /// <para>-- Rule Template for ChangeValue action always when all sources have changed --</para>
+    /// <para>NewRule(</para>
+    /// <para>sourceInputs: new() {inputs},</para>
+    /// <para>targetInput: new() {targets},</para>
+    /// <para>valueToChangeFunc: Func<object></para>
+    /// <para>actionType: RuleActionType.type</para>
+    /// <para>);</para>
+    /// </summary>
     public void NewRule(TabInput[] sourceInputs, TabInput targetInput, Func<object> valueToChangeFunc, RuleActionType actionType)
     {
         if (actionType == RuleActionType.ChangeValue)

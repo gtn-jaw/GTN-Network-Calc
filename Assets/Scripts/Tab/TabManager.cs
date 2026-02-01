@@ -22,6 +22,7 @@ public class TabManager : MonoBehaviour
 
     public enum TabType
     {
+        None,
         OpenFile,
         NewFile,
         SaveFile,
@@ -49,6 +50,7 @@ public class TabManager : MonoBehaviour
         }
 
         tabController = new TabController();
+        CurrentTabType = TabType.None;
     }
 
     private void Update()
@@ -63,6 +65,38 @@ public class TabManager : MonoBehaviour
             processRulesCoroutineRunning = false;
             tabController.StopRunningRules();
         }
+
+        if (Input.GetKeyDown(KeyCode.Escape) && tabActive)
+        {
+            DisableTab();
+        }
+    }
+
+    public void CloseTab()
+    {
+        DisableTab();
+    }
+
+    private void DisableTab()
+    {
+        tabActive = false;
+        BG.SetActive(false); // Disable background
+        ActionName.text = ""; // Clear action name
+        CurrentTabType = TabType.None;
+
+        processRulesCoroutineRunning = false;
+        tabController.StopRunningRules();       
+        tabController.RemoveAllRules();
+        tabController.Reload();
+
+        // Destroy all existing tab inputs
+        GameObject[] tabs = tabInputs.Select(t => t.gameObject).ToArray();
+        for (int i = 0; i < tabs.Length; i++)
+        {
+            Destroy(tabs[i].gameObject);
+        }
+
+        tabInputs = null;
     }
 
     /// <summary>
@@ -72,7 +106,7 @@ public class TabManager : MonoBehaviour
     private void EnableTabType(TabType tabType)
     {
         CurrentTabType = tabType;
-        Debug.Log($"Opened tab: {tabType}");
+        //Debug.Log($"Opened tab: {tabType}");
 
         tabActive = true;
         BG.SetActive(true); // Enable background
