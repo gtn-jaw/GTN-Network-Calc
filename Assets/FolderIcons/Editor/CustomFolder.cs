@@ -18,9 +18,11 @@ namespace SimpleFolderIcon.Editor
             var path = AssetDatabase.GUIDToAssetPath(guid);
             var iconDictionary = IconDictionaryCreator.IconDictionary;
 
-            if (path == "" ||
-                Event.current.type != EventType.Repaint ||
-                !File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+            if (
+                path == ""
+                || Event.current.type != EventType.Repaint
+                || !File.GetAttributes(path).HasFlag(FileAttributes.Directory)
+            )
             {
                 return;
             }
@@ -35,11 +37,21 @@ namespace SimpleFolderIcon.Editor
                 }
                 else if (rect.x > 20)
                 {
-                    imageSquare = new Rect(rect.x - 1, rect.y - 1, rect.height + 2, rect.height + 2);
+                    imageSquare = new Rect(
+                        rect.x - 1,
+                        rect.y - 1,
+                        rect.height + 2,
+                        rect.height + 2
+                    );
                 }
                 else
                 {
-                    imageSquare = new Rect(rect.x + 2, rect.y - 1, rect.height + 2, rect.height + 2);
+                    imageSquare = new Rect(
+                        rect.x + 2,
+                        rect.y - 1,
+                        rect.height + 2,
+                        rect.height + 2
+                    );
                 }
 
                 var basic = IconDictionaryCreator.IconDictionary[Path.GetFileName("Basic")];

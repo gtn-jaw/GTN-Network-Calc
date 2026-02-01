@@ -15,7 +15,8 @@ public class TabController
         ChangeValue,
     }
 
-    [UnityEngine.SerializeField] List<Rule> _rules = new List<Rule>();
+    [UnityEngine.SerializeField]
+    List<Rule> _rules = new List<Rule>();
 
     // Which tab needs the roles to be run when its fields change
     // True means rules need to be run for that field
@@ -29,20 +30,26 @@ public class TabController
     [Serializable]
     class Rule
     {
-        public RuleActionType _type;// { get; private set; }
-        public TabInput[] _sourceInputs;// { get; private set; }
-        public object[] _valuesToCompare;// { get; private set; }
-        public TabInput[] _targetInputs;// { get; private set; }
-        public TabInput _targetInput;// { get; private set; }
-        public object _valueToChange = null;// { get; private set; }
-        public Func<object> _valueToChangeFunc = null;// { get; private set; }
+        public RuleActionType _type; // { get; private set; }
+        public TabInput[] _sourceInputs; // { get; private set; }
+        public object[] _valuesToCompare; // { get; private set; }
+        public TabInput[] _targetInputs; // { get; private set; }
+        public TabInput _targetInput; // { get; private set; }
+        public object _valueToChange = null; // { get; private set; }
+        public Func<object> _valueToChangeFunc = null; // { get; private set; }
 
         public Rule() { }
 
-        public Rule InitShow(TabInput[] sourceInputs, object[] valuesToCompare, TabInput[] targetInputs)
+        public Rule InitShow(
+            TabInput[] sourceInputs,
+            object[] valuesToCompare,
+            TabInput[] targetInputs
+        )
         {
             if (sourceInputs.Length != valuesToCompare.Length)
-                throw new System.Exception("Source inputs length must be equal to values to compare length.");
+                throw new System.Exception(
+                    "Source inputs length must be equal to values to compare length."
+                );
             if (targetInputs.Length == 0)
                 throw new System.Exception("Target inputs length must be greater than zero.");
             if (sourceInputs.Length == 0)
@@ -57,7 +64,9 @@ public class TabController
                 if (valuesToCompare[i] == null)
                     throw new System.Exception("Value to compare at index " + i + " is null.");
                 if (sourceInputs[i].GetMainValueType() != valuesToCompare[i].GetType())
-                    throw new System.Exception("Source input type at index " + i + " does not match value to compare type.");
+                    throw new System.Exception(
+                        "Source input type at index " + i + " does not match value to compare type."
+                    );
             }
 
             for (int i = 0; i < targetInputs.Length; i++)
@@ -74,10 +83,16 @@ public class TabController
             return this;
         }
 
-        public Rule InitHide(TabInput[] sourceInputs, object[] valuesToCompare, TabInput[] targetInputs)
+        public Rule InitHide(
+            TabInput[] sourceInputs,
+            object[] valuesToCompare,
+            TabInput[] targetInputs
+        )
         {
             if (sourceInputs.Length != valuesToCompare.Length)
-                throw new System.Exception("Source inputs length must be equal to values to compare length.");
+                throw new System.Exception(
+                    "Source inputs length must be equal to values to compare length."
+                );
             if (targetInputs.Length == 0)
                 throw new System.Exception("Target inputs length must be greater than zero.");
             if (sourceInputs.Length == 0)
@@ -92,7 +107,9 @@ public class TabController
                 if (valuesToCompare[i] == null)
                     throw new System.Exception("Value to compare at index " + i + " is null.");
                 if (sourceInputs[i].GetMainValueType() != valuesToCompare[i].GetType())
-                    throw new System.Exception("Source input type at index " + i + " does not match value to compare type.");
+                    throw new System.Exception(
+                        "Source input type at index " + i + " does not match value to compare type."
+                    );
             }
 
             for (int i = 0; i < targetInputs.Length; i++)
@@ -109,10 +126,17 @@ public class TabController
             return this;
         }
 
-        public Rule InitChangeValue(TabInput[] sourceInputs, object[] valuesToCompare, TabInput targetInput, object valueToChange)
+        public Rule InitChangeValue(
+            TabInput[] sourceInputs,
+            object[] valuesToCompare,
+            TabInput targetInput,
+            object valueToChange
+        )
         {
             if (sourceInputs.Length != valuesToCompare.Length)
-                throw new System.Exception("Source inputs length must be equal to values to compare length.");
+                throw new System.Exception(
+                    "Source inputs length must be equal to values to compare length."
+                );
             if (sourceInputs.Length == 0)
                 throw new System.Exception("Source inputs length must be greater than zero.");
             if (valuesToCompare.Length == 0)
@@ -129,12 +153,19 @@ public class TabController
                 if (valuesToCompare[i] == null)
                     throw new System.Exception("Value to compare at index " + i + " is null.");
                 if (sourceInputs[i].GetMainValueType() != valuesToCompare[i].GetType())
-                    throw new System.Exception("Source input type at index " + i + " does not match value to compare type.");
+                    throw new System.Exception(
+                        "Source input type at index " + i + " does not match value to compare type."
+                    );
             }
             // UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
             // UnityEngine.Debug.Log("Value to change type: " + valueToChange.GetType());
             if (targetInput.GetAssignedValueType() != valueToChange.GetType())
-                throw new System.Exception("Target input type does not match value to change type.\nTarget input type: " + targetInput.GetAssignedValueType() + "\nValue to change type: " + valueToChange.GetType());
+                throw new System.Exception(
+                    "Target input type does not match value to change type.\nTarget input type: "
+                        + targetInput.GetAssignedValueType()
+                        + "\nValue to change type: "
+                        + valueToChange.GetType()
+                );
 
             _type = RuleActionType.ChangeValue;
             _sourceInputs = sourceInputs;
@@ -142,11 +173,14 @@ public class TabController
             _targetInput = targetInput;
             _valueToChange = valueToChange;
 
-
             return this;
         }
 
-        public Rule InitChangeValue(TabInput[] sourceInputs, TabInput targetInput, object valueToChange)
+        public Rule InitChangeValue(
+            TabInput[] sourceInputs,
+            TabInput targetInput,
+            object valueToChange
+        )
         {
             if (sourceInputs.Length == 0)
                 throw new System.Exception("Source inputs length must be greater than zero.");
@@ -163,7 +197,12 @@ public class TabController
             // UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
             //UnityEngine.Debug.Log("Value to change type: " + valueToChange.GetType());
             if (targetInput.GetAssignedValueType() != valueToChange.GetType())
-                throw new System.Exception("Target input type does not match value to change type.\nTarget input type: " + targetInput.GetAssignedValueType() + "\nValue to change type: " + valueToChange.GetType());
+                throw new System.Exception(
+                    "Target input type does not match value to change type.\nTarget input type: "
+                        + targetInput.GetAssignedValueType()
+                        + "\nValue to change type: "
+                        + valueToChange.GetType()
+                );
 
             _type = RuleActionType.ChangeValue;
             _sourceInputs = sourceInputs;
@@ -174,7 +213,11 @@ public class TabController
             return this;
         }
 
-        public Rule InitChangeValue(TabInput[] sourceInputs, TabInput targetInput, Func<object> valueToChangeFunc)
+        public Rule InitChangeValue(
+            TabInput[] sourceInputs,
+            TabInput targetInput,
+            Func<object> valueToChangeFunc
+        )
         {
             object funcValue = valueToChangeFunc();
             if (sourceInputs.Length == 0)
@@ -192,7 +235,12 @@ public class TabController
             // UnityEngine.Debug.Log("Target input type: " + targetInput.GetAssignedValueType());
             // UnityEngine.Debug.Log("Value to change type: " + funcValue.GetType());
             if (targetInput.GetAssignedValueType() != funcValue.GetType())
-                throw new System.Exception("Target input type does not match value to change type.\nTarget input type: " + targetInput.GetAssignedValueType() + "\nValue to change type: " + funcValue.GetType());
+                throw new System.Exception(
+                    "Target input type does not match value to change type.\nTarget input type: "
+                        + targetInput.GetAssignedValueType()
+                        + "\nValue to change type: "
+                        + funcValue.GetType()
+                );
 
             _type = RuleActionType.ChangeValue;
             _sourceInputs = sourceInputs;
@@ -230,10 +278,13 @@ public class TabController
 
     public void End()
     {
-        _fieldsToRulesRun.Select(i => i.Key).ToList().ForEach(i =>
-        {
-            i.DesubscribeAll();
-        });
+        _fieldsToRulesRun
+            .Select(i => i.Key)
+            .ToList()
+            .ForEach(i =>
+            {
+                i.DesubscribeAll();
+            });
     }
 
     /// <summary>
@@ -257,7 +308,10 @@ public class TabController
             Rule rule = new Rule().InitHide(sourceInputs, valuesToCompare, targetInputs);
             _rules.Add(rule);
         }
-        else throw new System.Exception($"Wrong method syntax for this rule action type: {actionType}");
+        else
+            throw new System.Exception(
+                $"Wrong method syntax for this rule action type: {actionType}"
+            );
     }
 
     /// <summary>
@@ -274,10 +328,18 @@ public class TabController
     {
         if (actionType == RuleActionType.ChangeValue)
         {
-            Rule rule = new Rule().InitChangeValue(sourceInputs, valuesToCompare, targetInput, valueToChange);
+            Rule rule = new Rule().InitChangeValue(
+                sourceInputs,
+                valuesToCompare,
+                targetInput,
+                valueToChange
+            );
             _rules.Add(rule);
         }
-        else throw new System.Exception($"Wrong method syntax for this rule action type: {actionType}");
+        else
+            throw new System.Exception(
+                $"Wrong method syntax for this rule action type: {actionType}"
+            );
     }
 
     /// <summary>
@@ -296,7 +358,10 @@ public class TabController
             Rule rule = new Rule().InitChangeValue(sourceInputs, targetInput, valueToChange);
             _rules.Add(rule);
         }
-        else throw new System.Exception($"Wrong method syntax for this rule action type: {actionType}");
+        else
+            throw new System.Exception(
+                $"Wrong method syntax for this rule action type: {actionType}"
+            );
     }
 
     /// <summary>
@@ -315,10 +380,14 @@ public class TabController
             Rule rule = new Rule().InitChangeValue(sourceInputs, targetInput, valueToChangeFunc);
             _rules.Add(rule);
         }
-        else throw new System.Exception($"Wrong method syntax for this rule action type: {actionType}");
+        else
+            throw new System.Exception(
+                $"Wrong method syntax for this rule action type: {actionType}"
+            );
     }
 
     private bool _canContinueRunningRules = false;
+
     public void StopRunningRules()
     {
         _canContinueRunningRules = false;
@@ -335,7 +404,11 @@ public class TabController
             foreach (var _sourceInput in rule._sourceInputs)
             {
                 if (_fieldsToRulesRun.ContainsKey(_sourceInput) == false)
-                    throw new System.Exception("Source input not registered for rules running: " + rule._sourceInputs[0].GetFieldName() + " Be sure to call TabController.Reload() after adding all rules.");
+                    throw new System.Exception(
+                        "Source input not registered for rules running: "
+                            + rule._sourceInputs[0].GetFieldName()
+                            + " Be sure to call TabController.Reload() after adding all rules."
+                    );
             }
 
             bool shouldProcessRule = false;
@@ -363,7 +436,11 @@ public class TabController
                         bool allMatch = true;
                         for (int i = 0; i < rule._sourceInputs.Length; i++)
                         {
-                            if (!rule._sourceInputs[i].GetCurrentValue().Equals(rule._valuesToCompare[i]))
+                            if (
+                                !rule._sourceInputs[i]
+                                    .GetCurrentValue()
+                                    .Equals(rule._valuesToCompare[i])
+                            )
                             {
                                 allMatch = false;
                                 break;
@@ -384,7 +461,11 @@ public class TabController
                         bool allMatch = true;
                         for (int i = 0; i < rule._sourceInputs.Length; i++)
                         {
-                            if (!rule._sourceInputs[i].GetCurrentValue().Equals(rule._valuesToCompare[i]))
+                            if (
+                                !rule._sourceInputs[i]
+                                    .GetCurrentValue()
+                                    .Equals(rule._valuesToCompare[i])
+                            )
                             {
                                 allMatch = false;
                                 break;
@@ -407,7 +488,11 @@ public class TabController
                         {
                             for (int i = 0; i < rule._sourceInputs.Length; i++)
                             {
-                                if (!rule._sourceInputs[i].GetCurrentValue().Equals(rule._valuesToCompare[i]))
+                                if (
+                                    !rule._sourceInputs[i]
+                                        .GetCurrentValue()
+                                        .Equals(rule._valuesToCompare[i])
+                                )
                                 {
                                     allMatch = false;
                                     break;
@@ -426,7 +511,9 @@ public class TabController
                             else if (rule._valueToChangeFunc != null)
                                 rule._targetInput.SetValue(rule._valueToChangeFunc());
                             else
-                                throw new System.Exception("Both valueToChange and valueToChangeFunc are null in ChangeValue rule.");
+                                throw new System.Exception(
+                                    "Both valueToChange and valueToChangeFunc are null in ChangeValue rule."
+                                );
                         }
                     }
                     break;

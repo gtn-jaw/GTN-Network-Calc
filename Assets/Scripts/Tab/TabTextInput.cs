@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class TabTextInput : TabInput
 {
-    [SerializeField] TMP_Text FieldName;
-    [SerializeField] TMP_InputField TextInputField;
+    [SerializeField]
+    TMP_Text FieldName;
+
+    [SerializeField]
+    TMP_InputField TextInputField;
 
     public void Init(string fieldName, string defaultText)
     {
@@ -18,7 +21,7 @@ public class TabTextInput : TabInput
 
         _text = defaultText;
     }
-    
+
     public void SetValue(string newText)
     {
         TextInputField.text = newText;

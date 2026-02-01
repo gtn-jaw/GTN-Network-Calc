@@ -2,19 +2,27 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-namespace SimpleFolderIcon.Editor 
+
+namespace SimpleFolderIcon.Editor
 {
     public class IconDictionaryCreator : AssetPostprocessor
     {
         private const string AssetsPath = "FolderIcons/Icons";
         internal static Dictionary<string, Texture> IconDictionary;
 
-        private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
+        private static void OnPostprocessAllAssets(
+            string[] importedAssets,
+            string[] deletedAssets,
+            string[] movedAssets,
+            string[] movedFromAssetPaths
+        )
         {
-            if (!ContainsIconAsset(importedAssets) &&
-                !ContainsIconAsset(deletedAssets) &&
-                !ContainsIconAsset(movedAssets) &&
-                !ContainsIconAsset(movedFromAssetPaths))
+            if (
+                !ContainsIconAsset(importedAssets)
+                && !ContainsIconAsset(deletedAssets)
+                && !ContainsIconAsset(movedAssets)
+                && !ContainsIconAsset(movedFromAssetPaths)
+            )
             {
                 return;
             }
@@ -26,7 +34,6 @@ namespace SimpleFolderIcon.Editor
         {
             foreach (string str in assets)
             {
-
                 if (ReplaceSeparatorChar(Path.GetDirectoryName(str)) == "Assets/" + AssetsPath)
                 {
                     return true;
@@ -47,24 +54,28 @@ namespace SimpleFolderIcon.Editor
             var dir = new DirectoryInfo(Application.dataPath + "/" + AssetsPath);
 
             FileInfo[] infoSO = dir.GetFiles("*.asset");
-            foreach (FileInfo f in infoSO) 
+            foreach (FileInfo f in infoSO)
             {
-                var folderIconSO = (FolderObject)AssetDatabase.LoadAssetAtPath($"Assets/FolderIcons/Icons/{f.Name}", typeof(FolderObject));
+                var folderIconSO = (FolderObject)
+                    AssetDatabase.LoadAssetAtPath(
+                        $"Assets/FolderIcons/Icons/{f.Name}",
+                        typeof(FolderObject)
+                    );
 
-                if (folderIconSO != null) 
+                if (folderIconSO != null)
                 {
                     var texture = (Texture)folderIconSO.texture;
 
-                    foreach (string folderName in folderIconSO.names) 
+                    foreach (string folderName in folderIconSO.names)
                     {
-                        if (folderName != null) 
+                        if (folderName != null)
                         {
                             dictionary.TryAdd(folderName, texture);
                         }
                     }
                 }
             }
-            
+
             IconDictionary = dictionary;
         }
     }

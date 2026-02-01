@@ -1,0 +1,55 @@
+name: Test for provided mode
+
+on:
+  workflow_call:
+      inputs:
+          testMode:
+            description: 'The test mode project should be tested for'
+            required: true
+            type: string
+            default: 'All'
+
+jobs:
+  test:
+    name: ${{ inputs.testMode }}
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          lfs: true
+      - name: Cache
+        uses: actions/cache@v5
+        with:
+          path: Library
+          key: Library
+          restore-keys: Library-
+      - name: Test project
+        uses: game-ci/unity-test-runner@v4
+        id: tests
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          testMode: ${{ inputs.testMode }}
+          artifactsPath: ${{ inputs.testMode }}-artifacts
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: ${{ inputs.testMode }} Test Results
+      - name: Upload test results artifact
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: Test results for ${{ inputs.testMode }}
+          path: ${{ steps.tests.outputs.artifactsPath }}
+          compression-level: 9
+      - name: Upload coverage results artifact
+        uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: Coverage results for ${{ inputs.testMode }}
+          path: ${{ steps.tests.outputs.coveragePath }}
+          compression-level: 9

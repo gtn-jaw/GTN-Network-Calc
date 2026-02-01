@@ -5,7 +5,8 @@ using UnityEngine;
 [Serializable]
 public class IP
 {
-    [SerializeField] byte[] _ip;
+    [SerializeField]
+    byte[] _ip;
 
     public override string ToString()
     {
