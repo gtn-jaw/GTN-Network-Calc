@@ -18,6 +18,8 @@ public class TabDropdownInput : TabInput
         SetValues(options, defaultIndex);
 
         Dropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+        
+        _isFieldValid = true;
     }
 
     public void SetValues(string[] options, int selectedIndex)

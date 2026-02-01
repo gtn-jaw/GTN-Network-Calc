@@ -20,6 +20,8 @@ public class TabTextInput : TabInput
         TextInputField.onValueChanged.AddListener((value) => OnTextChanged(value));
 
         _text = defaultText;
+
+        _isFieldValid = true;
     }
 
     public void SetValue(string newText)

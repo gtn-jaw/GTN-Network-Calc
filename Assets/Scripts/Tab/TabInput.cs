@@ -13,6 +13,7 @@ public class TabInput : MonoBehaviour
     }
 
     protected TabInputType _inputType;
+    public bool _isFieldValid = true;
 
     public event Action<TabInput> OnValueChanged;
 
@@ -38,7 +39,7 @@ public class TabInput : MonoBehaviour
     protected int _dropdownIndex;
     protected string[] _dropdownOptions;
     protected IP _ip;
-    protected Mask _mask;
+    public Mask _mask;
     protected string _text;
 
     #endregion
@@ -51,6 +52,11 @@ public class TabInput : MonoBehaviour
     public (int index, string[] options) GetDropdownValue()
     {
         return (_dropdownIndex, _dropdownOptions);
+    }
+
+    public bool IsFieldValid()
+    {
+        return _isFieldValid;
     }
 
     public IP GetIPValue()

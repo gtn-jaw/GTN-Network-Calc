@@ -13,6 +13,12 @@ public class NetManagement
             | ip.GetIPAsBytes()[3];
     }
 
+    public static string UInt32ToIPString(uint ip)
+    {
+        return $"{(ip >> 24) & 0xFF}.{(ip >> 16) & 0xFF}.{(ip >> 8) & 0xFF}.{ip & 0xFF}";
+    }
+
+
     public static uint ToUInt32(Mask mask)
     {
         return ((uint)mask.GetMaskAsBytes()[0] << 24)
@@ -225,5 +231,53 @@ public class NetManagement
     public static bool ValidateMaskByte(byte bite)
     {
         return validMaskBytes.Contains(bite);
+    }
+
+    public static uint[] GetNetworkIds(IP sourceIp, Mask sourceMask)
+    {
+        uint ipVal = ToUInt32(sourceIp);
+        uint maskVal = ToUInt32(sourceMask);
+        uint step = ~maskVal + 1;
+        if (step == 0) return new uint[] { 0 };
+
+        uint currentNetworkId = ipVal & maskVal;
+        uint startPoint = (ipVal <= currentNetworkId) ? currentNetworkId : currentNetworkId + step;
+
+        // RACJONALNY LIMIT:
+        // Jeśli maska jest ciasna (zmienia tylko końcówkę), trzymaj się oktetu (255 adresów).
+        // Jeśli maska jest szeroka, pozwól pętli na 100 wyników bez ograniczeń oktetowych.
+        uint limit;
+        if (maskVal >= 0xFFFFFF00) // Maski /24 i wyższe
+        {
+            limit = (ipVal & 0xFFFFFF00) | 0x000000FF;
+        }
+        else if (maskVal >= 0xFFFF0000) // Maski /16 do /23
+        {
+            limit = (ipVal & 0xFF000000) | 0x00FFFFFF;
+        }
+        else if (maskVal >= 0xFF000000) // Maski /8 do /15
+        {
+            limit = (ipVal & 0xFFFF0000) | 0x0000FFFF;
+        }
+        else if (maskVal >= 0x00000000) // Maski /0 do /7
+        {
+            limit = (ipVal & 0x00000000) | 0xFFFFFFFF;
+        }
+        else
+        {
+            limit = uint.MaxValue;
+        }
+
+        List<uint> result = new List<uint>();
+        uint current = startPoint;
+
+        while (result.Count < 100 && current <= limit)
+        {
+            result.Add(current);
+            if (uint.MaxValue - current < step) break;
+            current += step;
+        }
+
+        return result.ToArray();
     }
 }

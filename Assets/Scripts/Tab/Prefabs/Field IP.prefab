@@ -2105,6 +2105,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 172835a9f683aaa4fb766d47f0e9b6c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TabIPInput
+  _isFieldValid: 1
+  _mask:
+    _mask: ffffff00
   FieldName: {fileID: 7032877751312232563}
   IPBytes:
   - {fileID: 4073003589446839917}

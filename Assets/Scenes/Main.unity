@@ -2294,6 +2294,7 @@ MonoBehaviour:
   TabsParent: {fileID: 708339802}
   BG: {fileID: 874878928}
   ActionName: {fileID: 2132825359}
+  AcceptButton: {fileID: 1220514657}
   tabController:
     _rules: []
 --- !u!1 &874878928

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 [Serializable]
@@ -270,7 +271,10 @@ public class TabController
             {
                 //UnityEngine.Debug.Log("Registering field for rules running: " + tabInput.GetFieldName());
                 _fieldsToRulesRun.Add(tabInput, true);
-                tabInput.OnValueChanged += (input) => _fieldsToRulesRun[input] = true;
+                tabInput.OnValueChanged += (input) =>
+                {
+                    _fieldsToRulesRun[input] = true;
+                };
             });
 
         //UnityEngine.Debug.Log($"TabController reloaded. Fields to run rules on change: {_fieldsToRulesRun.Count}");

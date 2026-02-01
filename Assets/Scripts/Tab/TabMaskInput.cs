@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -7,7 +9,7 @@ public class TabMaskInput : TabInput
     TMP_Text FieldName;
 
     [SerializeField]
-    TMP_InputField[] IPBytes;
+    TMP_InputField[] MaskBytes;
 
     [SerializeField]
     TMP_InputField SlashNotation;
@@ -18,6 +20,9 @@ public class TabMaskInput : TabInput
     [SerializeField]
     Color InvalidColor = Color.red;
 
+    [SerializeField]
+    bool[] validityOfBytes = new bool[4];
+
     public void Init(string fieldName, Mask defaultMask)
     {
         InitTab(TabInputType.Mask, fieldName);
@@ -27,53 +32,109 @@ public class TabMaskInput : TabInput
         // 4 bytes
         for (int i = 0; i < 4; i++)
         {
-            IPBytes[i].text = defaultMask.GetMaskAsBytes()[i].ToString();
+            MaskBytes[i].SetTextWithoutNotify(defaultMask.GetMaskAsBytes()[i].ToString());
             int index = i; // Capture index for the listener
-            IPBytes[i].onValueChanged.AddListener((value) => OnMaskByteChanged(index, value));
+            MaskBytes[i].onValueChanged.AddListener((value) => OnMaskByteChanged(index, value));
         }
 
         // Slash notation
-        SlashNotation.text = defaultMask.GetMaskBitsCount().ToString();
+        SlashNotation.SetTextWithoutNotify(defaultMask.GetMaskBitsCount().ToString());
         SlashNotation.onValueChanged.AddListener((value) => OnMaskSlashChanged(value));
 
         _mask = defaultMask;
+
+        validityOfBytes = validityOfBytes.Select(v => true).ToArray();
+        _isFieldValid = true;
     }
 
     public void SetValue(Mask newMask)
     {
         for (int i = 0; i < 4; i++)
         {
-            IPBytes[i].text = newMask.GetMaskAsBytes()[i].ToString();
+            MaskBytes[i].SetTextWithoutNotify(newMask.GetMaskAsBytes()[i].ToString());
         }
 
-        SlashNotation.text = newMask.GetMaskBitsCount().ToString();
+        SlashNotation.SetTextWithoutNotify(newMask.GetMaskBitsCount().ToString());
 
         _mask = newMask;
+        _isFieldValid = true;
     }
 
     private void OnMaskByteChanged(int index, string value)
     {
-        if (byte.TryParse(value, out byte byteSegment))
+        byte[] newMaskBytes = new byte[4];
+        _mask.SetMask(newMaskBytes);
+
+        bool priviousBytesValid = true;
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (CheckIntegrity(i, priviousBytesValid))
+            {
+                newMaskBytes[i] = byte.Parse(MaskBytes[i].text);
+                _mask.SetMask(newMaskBytes);
+            }
+            else priviousBytesValid = false;
+        }
+
+        UpdateVisuals();
+
+        RaiseOnValueChanged();
+    }
+
+    private bool CheckIntegrity(int index, bool previousBytesValid)
+    {
+        if (!previousBytesValid)
+        {
+            MarkByteAsInvalid(index);
+            return false;
+        }
+
+        if (byte.TryParse(MaskBytes[index].text, out byte byteSegment))
         {
             if (!NetManagement.ValidateMaskByte(byteSegment)) // Value must be valid mask byte not only from range 0-255
             {
-                IPBytes[index].image.color = InvalidColor;
-                return;
+                MarkByteAsInvalid(index);
+                return false;
             }
 
-            byte[] maskBytes = _mask.GetMaskAsBytes();
+            byte[] maskBytes = (byte[])_mask.GetMaskAsBytes().Clone();
 
             maskBytes[index] = byteSegment;
-            _mask = new Mask(maskBytes);
-            IPBytes[index].image.color = ValidColor;
-            UpdateSlashNotation();
+            Debug.Log($"Mask changed to {string.Join(".", maskBytes)} from {_mask}");
+
+            if (!Mask.ValidateAndConvert(maskBytes).valid) // Check if the new mask is valid
+            {
+                MarkByteAsInvalid(index);
+                return false;
+            }
+
+            MarkByteAsValid(index);
+            return true;
         }
         else
         {
-            IPBytes[index].image.color = InvalidColor;
+            MarkByteAsInvalid(index);
+            return false;
         }
-        RaiseOnValueChanged();
-        Debug.Log("Mask byte changed");
+    }
+
+    private void MarkByteAsInvalid(int index)
+    {
+        validityOfBytes[index] = false;
+        _isFieldValid = validityOfBytes.All(v => v);
+    }
+
+    private void MarkByteAsValid(int index)
+    {
+        validityOfBytes[index] = true;
+        _isFieldValid = validityOfBytes.All(v => v);
+    }
+
+    public void UpdateVisuals()
+    {
+        UpdateDottedNotation();
+        UpdateSlashNotation();
     }
 
     private void OnMaskSlashChanged(string value)
@@ -82,34 +143,55 @@ public class TabMaskInput : TabInput
         {
             if (num < 0 || num > 32)
             {
+                validityOfBytes = validityOfBytes.Select(v => false).ToArray();
+                _isFieldValid = false;
                 SlashNotation.image.color = InvalidColor;
+                RaiseOnValueChanged();
                 return;
             }
 
             _mask.SetMask($"/{num}");
-            SlashNotation.image.color = ValidColor;
+            validityOfBytes = validityOfBytes.Select(v => true).ToArray();
+            _isFieldValid = true;
             UpdateDottedNotation();
+            UpdateSlashNotation();
+            RaiseOnValueChanged();
+            return;
         }
         else
         {
             SlashNotation.image.color = InvalidColor;
+            validityOfBytes = validityOfBytes.Select(v => false).ToArray();
+            _isFieldValid = false;
+            RaiseOnValueChanged();
+            return;
         }
-        RaiseOnValueChanged();
-        Debug.Log("Mask slash changed");
     }
 
     private void UpdateDottedNotation()
     {
-        byte[] maskBytes = _mask.GetMaskAsBytes();
         for (int i = 0; i < 4; i++)
         {
-            IPBytes[i].text = maskBytes[i].ToString();
+            MaskBytes[i].image.color = validityOfBytes[i] ? ValidColor : InvalidColor;
+            if (validityOfBytes[i])
+                MaskBytes[i].SetTextWithoutNotify(_mask.GetMaskAsBytes()[i].ToString());
         }
+        Debug.Log("Dotted notation updated.");
     }
 
     private void UpdateSlashNotation()
     {
-        int bits = _mask.GetMaskBitsCount();
-        SlashNotation.text = bits.ToString();
+        if (_isFieldValid)
+        {
+            int bits = _mask.GetMaskBitsCount();
+            SlashNotation.SetTextWithoutNotify(bits.ToString());
+            SlashNotation.image.color = ValidColor;
+        }
+        else
+        {
+            SlashNotation.SetTextWithoutNotify("");
+            SlashNotation.image.color = InvalidColor;
+        }
+        Debug.Log("Slash notation updated.");
     }
 }
