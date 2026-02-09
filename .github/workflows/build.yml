@@ -61,8 +61,9 @@ jobs:
       - name: Save library to cache
         if: always()
         run: |
-          CACHE_DIR="/root/unity-cache/Library-${{ inputs.targetPlatform }}"
+          CACHE_DIR="/root/unity-cache/${{ github.repository_id }}/Library-${{ inputs.targetPlatform }}"
           if [ -d "Library" ]; then
+            mkdir -p "$(dirname "$CACHE_DIR")"
             mv Library "$CACHE_DIR"
           fi
 
