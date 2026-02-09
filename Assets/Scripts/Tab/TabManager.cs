@@ -505,10 +505,11 @@ public class TabManager : MonoBehaviour
                             )
                         ),
                         (TabInput.TabInputType.Text, "Tag name", "name"),
-                        (TabInput.TabInputType.IP, "IP",  NetHolder
-                                    .GetNetworkData()
-                                    .GetNetworkBases()
-                                    .FirstOrDefault()?.GetIP() ?? new IP("0.0.0.0")
+                        (
+                            TabInput.TabInputType.IP,
+                            "IP",
+                            NetHolder.GetNetworkData().GetNetworkBases().FirstOrDefault()?.GetIP()
+                                ?? new IP("0.0.0.0")
                         ),
                     }
                 );
@@ -529,16 +530,25 @@ public class TabManager : MonoBehaviour
                             if (networkData == null || networkData.GetNetworkBases().Count == 0)
                                 return new IP("0.0.0.0");
 
-                            string? selectedNetworkName = (string?)tabInputs.First(i => i.GetFieldName() == "Base networks").GetCurrentValue();
+                            string? selectedNetworkName = (string?)
+                                tabInputs
+                                    .First(i => i.GetFieldName() == "Base networks")
+                                    .GetCurrentValue();
                             if (selectedNetworkName == null)
                                 return new IP("404.404.404.404");
 
-                            IP ip = new IP(networkData
+                            IP ip = new IP(
+                                networkData
                                     .GetNetworkBases()
                                     ?.FirstOrDefault(n => n.GetName() == selectedNetworkName)
-                                    ?.GetIP().ToString() ?? "0.0.0.0");
-                                    
-                            Debug.Log($"Updated IP field to {ip} based on selected network {selectedNetworkName}");
+                                    ?.GetIP()
+                                    .ToString()
+                                    ?? "0.0.0.0"
+                            );
+
+                            Debug.Log(
+                                $"Updated IP field to {ip} based on selected network {selectedNetworkName}"
+                            );
                             return ip;
                         }
                     ),
@@ -644,14 +654,17 @@ public class TabManager : MonoBehaviour
                     // Logic to accept Add Tag tab input values
                     string selectedNetworkStr = (string)getAddNetValues[0];
                     Network thisNet = NetManagement.GetNetworkByName(selectedNetworkStr);
-                    if (thisNet == null) break;
+                    if (thisNet == null)
+                        break;
 
                     string tagName = (string)getAddNetValues[1];
                     IP tagIP = (IP)getAddNetValues[2];
 
                     if (thisNet.GetTags().Any(t => t.ip.Equals(tagIP)))
                     {
-                        Debug.LogError("Cannot add tag. A tag with the same IP already exists in this network.");
+                        Debug.LogError(
+                            "Cannot add tag. A tag with the same IP already exists in this network."
+                        );
                         break;
                     }
 
@@ -663,7 +676,6 @@ public class TabManager : MonoBehaviour
                     {
                         Debug.LogError("Cannot add tag. Tag IP is not within the network range.");
                     }
-
                 }
                 break;
             case TabType.ChangeName:

@@ -157,7 +157,8 @@ public class NetVisualizer : MonoBehaviour
             netDatas.Clear();
         }
 
-        if (mustAddLine) AddNDToList(NetData.Create(networkV, indent + $"----------------------------------"));
+        if (mustAddLine)
+            AddNDToList(NetData.Create(networkV, indent + $"----------------------------------"));
         AddNDListToList(
             new()
             {

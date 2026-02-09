@@ -135,7 +135,13 @@ public class TabInput : MonoBehaviour
         switch (_inputType)
         {
             case TabInputType.Dropdown:
-                return _dropdownOptions != null && _dropdownOptions.Length > 0 && _dropdownIndex >= 0 && _dropdownIndex < _dropdownOptions.Length ? _dropdownOptions[_dropdownIndex] : null;
+                return
+                    _dropdownOptions != null
+                    && _dropdownOptions.Length > 0
+                    && _dropdownIndex >= 0
+                    && _dropdownIndex < _dropdownOptions.Length
+                    ? _dropdownOptions[_dropdownIndex]
+                    : null;
             case TabInputType.IP:
                 return GetIPValue();
             case TabInputType.Mask:

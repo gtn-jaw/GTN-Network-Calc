@@ -58,7 +58,7 @@ public class Network
         _tags.Add(new Tag(tagName, this, tagIP, _mask));
         SortTagsByIP();
     }
-    
+
     private void SortTagsByIP()
     {
         _tags = _tags.OrderBy(t => t.ip.GetIPAsUInt32()).ToList();
