@@ -53,7 +53,7 @@ public class TabManager : MonoBehaviour
         Info,
     }
 
-    public TabType CurrentTabType { get; private set; }
+    public TabType currentTabType { get; private set; }
 
     private void Awake()
     {
@@ -67,7 +67,7 @@ public class TabManager : MonoBehaviour
         }
 
         tabController = new TabController();
-        CurrentTabType = TabType.None;
+        currentTabType = TabType.None;
     }
 
     private void Update()
@@ -105,7 +105,7 @@ public class TabManager : MonoBehaviour
         tabActive = false;
         BG.SetActive(false); // Disable background
         ActionName.text = ""; // Clear action name
-        CurrentTabType = TabType.None;
+        currentTabType = TabType.None;
 
         processRulesCoroutineRunning = false;
         tabController.StopRunningRules();
@@ -128,7 +128,7 @@ public class TabManager : MonoBehaviour
     /// <param name="tabType"></param>
     private void EnableTabType(TabType tabType)
     {
-        CurrentTabType = tabType;
+        currentTabType = tabType;
         //Debug.Log($"Opened tab: {tabType}");
 
         tabActive = true;
@@ -505,11 +505,46 @@ public class TabManager : MonoBehaviour
                             )
                         ),
                         (TabInput.TabInputType.Text, "Tag name", "name"),
-                        (TabInput.TabInputType.IP, "IP", new IP("192.168.0.0")),
+                        (TabInput.TabInputType.IP, "IP",  NetHolder
+                                    .GetNetworkData()
+                                    .GetNetworkBases()
+                                    .FirstOrDefault()?.GetIP() ?? new IP("0.0.0.0")
+                        ),
                     }
                 );
 
                 tabController.RemoveAllRules();
+
+                tabController.NewRule(
+                    // When "Base networks" changes then update "IP" value to the network's IP
+                    sourceInputs: new TabInput[]
+                    {
+                        tabInputs.First(i => i.GetFieldName() == "Base networks"),
+                    },
+                    targetInput: tabInputs.First(i => i.GetFieldName() == "IP"),
+                    valueToChangeFunc: (
+                        () =>
+                        {
+                            NetworkData networkData = NetHolder.GetNetworkData();
+                            if (networkData == null || networkData.GetNetworkBases().Count == 0)
+                                return new IP("0.0.0.0");
+
+                            string? selectedNetworkName = (string?)tabInputs.First(i => i.GetFieldName() == "Base networks").GetCurrentValue();
+                            if (selectedNetworkName == null)
+                                return new IP("404.404.404.404");
+
+                            IP ip = new IP(networkData
+                                    .GetNetworkBases()
+                                    ?.FirstOrDefault(n => n.GetName() == selectedNetworkName)
+                                    ?.GetIP().ToString() ?? "0.0.0.0");
+                                    
+                            Debug.Log($"Updated IP field to {ip} based on selected network {selectedNetworkName}");
+                            return ip;
+                        }
+                    ),
+                    actionType: TabController.RuleActionType.ChangeValue
+                );
+
                 tabController.Reload();
                 break;
             case TabType.ChangeName:
@@ -558,6 +593,95 @@ public class TabManager : MonoBehaviour
         }
 
         tabInputs.ToList().ForEach(t => t.OnValueChanged += (input) => OnTabInputValueChanged());
+    }
+
+    private object[] GetOutputValuesForCurrentTab()
+    {
+        return tabInputs.Select(t => t.GetCurrentValue()).ToArray();
+    }
+
+    public void AcceptTabType()
+    {
+        object[] getAddNetValues = GetOutputValuesForCurrentTab();
+        NetworkData networkData = NetHolder.GetNetworkData();
+
+        switch (currentTabType)
+        {
+            case TabType.OpenFile:
+                // Logic to accept Open File tab input values
+                break;
+            case TabType.NewFile:
+                // Logic to accept New File tab input values
+                break;
+            case TabType.SaveFile:
+                // Logic to accept Save File tab input values
+                break;
+            case TabType.AddNet:
+                // Logic to accept Add Net tab input values
+                string netName = (string)getAddNetValues[0];
+                IP netIP = new IP((string)getAddNetValues[3]);
+                Mask netMask = (Mask)getAddNetValues[2];
+                NetManagement.AddNetwork(new Network(netName, netIP, netMask));
+                break;
+            case TabType.RemoveNet:
+                {
+                    // Logic to accept Remove Net tab input values
+                    string selectedNetworkStr = (string)getAddNetValues[0];
+
+                    Network thisNet = NetManagement.GetNetworkByName(selectedNetworkStr);
+                    if (thisNet != null)
+                        NetManagement.RemoveNetwork(thisNet);
+                }
+                break;
+            case TabType.ChangeIP:
+                // Logic to accept Change IP tab input values
+                break;
+            case TabType.ChangeMask:
+                // Logic to accept Change Mask tab input values
+                break;
+            case TabType.AddTag:
+                {
+                    // Logic to accept Add Tag tab input values
+                    string selectedNetworkStr = (string)getAddNetValues[0];
+                    Network thisNet = NetManagement.GetNetworkByName(selectedNetworkStr);
+                    if (thisNet == null) break;
+
+                    string tagName = (string)getAddNetValues[1];
+                    IP tagIP = (IP)getAddNetValues[2];
+
+                    if (thisNet.GetTags().Any(t => t.ip.Equals(tagIP)))
+                    {
+                        Debug.LogError("Cannot add tag. A tag with the same IP already exists in this network.");
+                        break;
+                    }
+
+                    if (NetManagement.IsBetween(tagIP, thisNet.GetIP(), thisNet.GetBroadcastIP()))
+                    {
+                        thisNet.AddTag(tagName, tagIP);
+                    }
+                    else
+                    {
+                        Debug.LogError("Cannot add tag. Tag IP is not within the network range.");
+                    }
+
+                }
+                break;
+            case TabType.ChangeName:
+                // Logic to accept Change Name tab input values
+                break;
+            case TabType.Info:
+                // Logic to accept Info tab input values
+                break;
+            default:
+                Debug.LogError("Unsupported TabType");
+                break;
+        }
+        currentTabType = TabType.None;
+
+        networkData.SortAll();
+        NetVisualizer.VisualizeNetwork();
+
+        DisableTab();
     }
 
     public void Open_OpenFile_Tab()

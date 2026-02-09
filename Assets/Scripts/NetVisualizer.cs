@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class NetVisualizer : MonoBehaviour
@@ -9,14 +9,14 @@ public class NetVisualizer : MonoBehaviour
 
     void Start()
     {
-        Test();
+        NetworkData networkData = new NetworkData();
+        NetHolder.SetNetworkData(networkData);
     }
 
     [ContextMenu("Test Visualize Network")]
     public void Test()
     {
-        NetworkData networkData = new NetworkData();
-        NetHolder.SetNetworkData(networkData);
+        NetworkData networkData = NetHolder.GetNetworkData();
 
         Network network1 = new Network(
             "Network Root 1",
@@ -81,36 +81,42 @@ public class NetVisualizer : MonoBehaviour
         VisualizeNetwork();
     }
 
+    public static void DeleteLastVisualization()
+    {
+        foreach (Transform child in NetHolder.instance.rootVTransform)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
     public static void VisualizeNetwork()
     {
+        DeleteLastVisualization();
+
         if (_networkVisualizerPrefab == null)
         {
             _networkVisualizerPrefab = Resources.Load<GameObject>("Prefabs/NetworkVisualization");
-            if (_networkVisualizerPrefab != null)
-                Debug.Log("Loaded NetworkVisualization prefab.");
-            else
+            if (_networkVisualizerPrefab == null)
                 Debug.LogError("Failed to load NetworkVisualization prefab.");
         }
 
         if (_netDataVPrefab == null)
         {
             _netDataVPrefab = Resources.Load<GameObject>("Prefabs/NetDataV");
-            if (_netDataVPrefab != null)
-                Debug.Log("Loaded NetDataV prefab.");
-            else
+            if (_netDataVPrefab == null)
                 Debug.LogError("Failed to load NetDataV prefab.");
         }
 
         NetworkData networkData = NetHolder.GetNetworkData();
         List<Network> networks = networkData.GetNetworkBases();
 
-        foreach (Network network in networks)
+        for (int i = 0; i < networks.Count; i++)
         {
-            VisualizeNetwork(network);
+            VisualizeNetwork(networks[i], i > 0);
         }
     }
 
-    static void VisualizeNetwork(Network network)
+    static void VisualizeNetwork(Network network, bool mustAddLine)
     {
         Mask mask = network.GetMask();
         IP net_ip = network.GetIP();
@@ -151,10 +157,10 @@ public class NetVisualizer : MonoBehaviour
             netDatas.Clear();
         }
 
+        if (mustAddLine) AddNDToList(NetData.Create(networkV, indent + $"----------------------------------"));
         AddNDListToList(
             new()
             {
-                NetData.Create(networkV, indent + $"----------------------------------"),
                 NetData.Create(networkV, "Name: " + network.GetName()),
                 NetData.Create(
                     networkV,
@@ -176,7 +182,7 @@ public class NetVisualizer : MonoBehaviour
             .ForEach(tag =>
             {
                 AddNDToList(
-                    NetData.Create(networkV, tag.ip, tag.mask, indent + "Tag-- " + tag.Text)
+                    NetData.Create(networkV, tag.ip, tag.mask, indent + "+ Tag: " + tag.Text)
                 );
             });
         PushNetDataList();

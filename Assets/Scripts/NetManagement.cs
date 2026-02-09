@@ -281,4 +281,22 @@ public class NetManagement
 
         return result.ToArray();
     }
+
+    public static void AddNetwork(Network net)
+    {
+        NetworkData networkData = NetHolder.GetNetworkData();
+        networkData.AddNetworkBase(net);
+    }
+
+    public static Network GetNetworkByName(string name)
+    {
+        NetworkData networkData = NetHolder.GetNetworkData();
+        return networkData.GetNetworkBases().FirstOrDefault(n => n.GetName() == name);
+    }
+
+    public static void RemoveNetwork(Network net)
+    {
+        NetworkData networkData = NetHolder.GetNetworkData();
+        networkData.RemoveNetworkBase(net);
+    }
 }

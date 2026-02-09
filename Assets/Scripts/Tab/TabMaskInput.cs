@@ -177,7 +177,6 @@ public class TabMaskInput : TabInput
             if (validityOfBytes[i])
                 MaskBytes[i].SetTextWithoutNotify(_mask.GetMaskAsBytes()[i].ToString());
         }
-        Debug.Log("Dotted notation updated.");
     }
 
     private void UpdateSlashNotation()
@@ -193,6 +192,5 @@ public class TabMaskInput : TabInput
             SlashNotation.SetTextWithoutNotify("");
             SlashNotation.image.color = InvalidColor;
         }
-        Debug.Log("Slash notation updated.");
     }
 }

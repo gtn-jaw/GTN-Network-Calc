@@ -456,8 +456,6 @@ public class TabController
             if (!_canContinueRunningRules)
                 yield break;
 
-            UnityEngine.Debug.Log("Processing rule: " + counter + " - " + rule._type);
-
             switch (rule._type)
             {
                 case RuleActionType.Show:

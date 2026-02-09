@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 [Serializable]
 public class Network
@@ -49,16 +50,30 @@ public class Network
     public void AddTag(Tag tag)
     {
         _tags.Add(tag);
+        SortTagsByIP();
+    }
+
+    public void AddTag(string tagName, IP tagIP)
+    {
+        _tags.Add(new Tag(tagName, this, tagIP, _mask));
+        SortTagsByIP();
+    }
+    
+    private void SortTagsByIP()
+    {
+        _tags = _tags.OrderBy(t => t.ip.GetIPAsUInt32()).ToList();
     }
 
     public void AddTagRange(List<Tag> tags)
     {
         _tags.AddRange(tags);
+        SortTagsByIP();
     }
 
     public void RemoveTag(Tag tag)
     {
         _tags.Remove(tag);
+        SortTagsByIP();
     }
 
     public string GetName()
