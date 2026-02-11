@@ -426,8 +426,8 @@ public class TabManager : MonoBehaviour
                                 .GetNetworkBases()
                                 .FirstOrDefault(n => n.GetName() == selectedNetworkStr);
                             return selectedNetwork != null
-                                ? selectedNetwork.GetIP()
-                                : new IP("999.999.999.999");
+                                ? new IP(selectedNetwork.GetIP().ToString())
+                                : new IP("0.0.0.0");
                         }
                     ),
                     actionType: TabController.RuleActionType.ChangeValue
@@ -478,8 +478,8 @@ public class TabManager : MonoBehaviour
                                 .GetNetworkBases()
                                 .FirstOrDefault(n => n.GetName() == selectedNetworkStr);
                             return selectedNetwork != null
-                                ? selectedNetwork.GetMask()
-                                : new Mask("999.999.999.999");
+                                ? new Mask(selectedNetwork.GetMask().ToString())
+                                : new Mask("/0");
                         }
                     ),
                     actionType: TabController.RuleActionType.ChangeValue
@@ -535,7 +535,7 @@ public class TabManager : MonoBehaviour
                                     .First(i => i.GetFieldName() == "Base networks")
                                     .GetCurrentValue();
                             if (selectedNetworkName == null)
-                                return new IP("404.404.404.404");
+                                return new IP("0.0.0.0");
 
                             IP ip = new IP(
                                 networkData
@@ -544,10 +544,6 @@ public class TabManager : MonoBehaviour
                                     ?.GetIP()
                                     .ToString()
                                     ?? "0.0.0.0"
-                            );
-
-                            Debug.Log(
-                                $"Updated IP field to {ip} based on selected network {selectedNetworkName}"
                             );
                             return ip;
                         }
@@ -645,9 +641,31 @@ public class TabManager : MonoBehaviour
                 break;
             case TabType.ChangeIP:
                 // Logic to accept Change IP tab input values
+                {
+                    string selectedNetworkStr = (string)getAddNetValues[0];
+                    if (selectedNetworkStr == null)
+                        break;
+                    Network thisNet = NetManagement.GetNetworkByName(selectedNetworkStr);
+                    if (thisNet == null)
+                        break;
+
+                    IP ip = (IP)getAddNetValues[1];
+                    thisNet.ChangeIP(new IP(ip.ToString()));
+                }
                 break;
             case TabType.ChangeMask:
                 // Logic to accept Change Mask tab input values
+                {
+                    string selectedNetworkStr = (string)getAddNetValues[0];
+                    if (selectedNetworkStr == null)
+                        break;
+                    Network thisNet = NetManagement.GetNetworkByName(selectedNetworkStr);
+                    if (thisNet == null)
+                        break;
+
+                    Mask mask = (Mask)getAddNetValues[1];
+                    thisNet.ChangeMask(new Mask(mask.ToString()));
+                }
                 break;
             case TabType.AddTag:
                 {
@@ -680,6 +698,17 @@ public class TabManager : MonoBehaviour
                 break;
             case TabType.ChangeName:
                 // Logic to accept Change Name tab input values
+                {
+                    string selectedNetworkStr = (string)getAddNetValues[0];
+                    if (selectedNetworkStr == null)
+                        break;
+                    Network thisNet = NetManagement.GetNetworkByName(selectedNetworkStr);
+                    if (thisNet == null)
+                        break;
+
+                    string newName = (string)getAddNetValues[1];
+                    thisNet.ChangeName(newName);
+                }
                 break;
             case TabType.Info:
                 // Logic to accept Info tab input values

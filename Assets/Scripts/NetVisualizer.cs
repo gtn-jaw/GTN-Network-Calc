@@ -11,6 +11,7 @@ public class NetVisualizer : MonoBehaviour
     {
         NetworkData networkData = new NetworkData();
         NetHolder.SetNetworkData(networkData);
+        Test();
     }
 
     [ContextMenu("Test Visualize Network")]
@@ -133,9 +134,9 @@ public class NetVisualizer : MonoBehaviour
             indent += "|   ";
         }
 
-        List<NetData> netDatas = new List<NetData>();
+        List<(NetData data, NetDataV.SubColorType color)> netDatas = new List<(NetData data, NetDataV.SubColorType color)>();
 
-        void AddNDListToList(List<NetData> datas)
+        void AddNDListToList(List<(NetData data, NetDataV.SubColorType color)> datas)
         {
             datas.ForEach(data =>
             {
@@ -143,38 +144,38 @@ public class NetVisualizer : MonoBehaviour
             });
         }
 
-        void AddNDToList(NetData data)
+        void AddNDToList((NetData data, NetDataV.SubColorType color) data)
         {
             netDatas.Add(data);
         }
 
         void PushNetDataList()
         {
-            foreach (NetData netData in netDatas)
+            foreach ((NetData data, NetDataV.SubColorType color) netData in netDatas)
             {
-                SpawnNetDataV(networkV, netData);
+                SpawnNetDataV(networkV, netData.data, netData.color);
             }
             netDatas.Clear();
         }
 
         if (mustAddLine)
-            AddNDToList(NetData.Create(networkV, indent + $"----------------------------------"));
+            AddNDToList((NetData.Create(networkV, indent + $"----------------------------------"), NetDataV.SubColorType.DEFAULT));
         AddNDListToList(
             new()
             {
-                NetData.Create(networkV, "Name: " + network.GetName()),
-                NetData.Create(
+                (NetData.Create(networkV, "Name: " + network.GetName()), NetDataV.SubColorType.HEADER),
+                (NetData.Create(
                     networkV,
                     $"Network IP: {net_ip}{mask.GetMaskAsStringSlashNotation()} ({mask.GetMaskAsStringDottedNotation()})"
-                ),
-                NetData.Create(networkV, first_usable_ip, mask, indent + "First Usable IP: "),
-                NetData.Create(networkV, last_usable_ip, mask, indent + "Last Usable IP: "),
-                NetData.Create(networkV, broadcast_ip, mask, indent + "Broadcast IP: "),
-                NetData.Create(networkV, indent + "Number of Usable Hosts: " + hostsCount),
-                NetData.Create(
+                ), NetDataV.SubColorType.DEFAULT),
+                (NetData.Create(networkV, first_usable_ip, mask, indent + "First Usable IP: "), NetDataV.SubColorType.WARNING),
+                (NetData.Create(networkV, last_usable_ip, mask, indent + "Last Usable IP: "), NetDataV.SubColorType.DEFAULT),
+                (NetData.Create(networkV, broadcast_ip, mask, indent + "Broadcast IP: "), NetDataV.SubColorType.ERROR),
+                (NetData.Create(networkV, indent + "Number of Usable Hosts: " + hostsCount), NetDataV.SubColorType.DEFAULT),
+                (NetData.Create(
                     networkV,
                     indent + (network.GetTags().Count > 0 ? "Tags:" : "No Tags")
-                ),
+                ), NetDataV.SubColorType.DEFAULT),
             }
         );
 
@@ -183,7 +184,7 @@ public class NetVisualizer : MonoBehaviour
             .ForEach(tag =>
             {
                 AddNDToList(
-                    NetData.Create(networkV, tag.ip, tag.mask, indent + "+ Tag: " + tag.Text)
+                    (NetData.Create(networkV, tag.ip, tag.mask, indent + "+ Tag: " + tag.Text), NetDataV.SubColorType.DEFAULT)
                 );
             });
         PushNetDataList();
@@ -203,7 +204,7 @@ public class NetVisualizer : MonoBehaviour
         return networkV;
     }
 
-    static NetDataV SpawnNetDataV(NetworkVisualization parentNetworkV, NetData _netData)
+    static NetDataV SpawnNetDataV(NetworkVisualization parentNetworkV, NetData _netData, NetDataV.SubColorType colorType = NetDataV.SubColorType.DEFAULT)
     {
         GameObject netDataVObj = GameObject.Instantiate(_netDataVPrefab);
         NetDataV netDataV = netDataVObj.GetComponent<NetDataV>();
@@ -212,6 +213,7 @@ public class NetVisualizer : MonoBehaviour
         netDataVObj.transform.parent = parentNetworkV.transform;
         netDataVObj.transform.SetAsLastSibling();
         netDataVObj.transform.localScale = Vector3.one;
+        netDataV.ChangeColor(colorType);
 
         netDataV.SetText();
 
