@@ -10,8 +10,12 @@ public class NetDataV : Checker
     [SerializeField]
     NetData _netData;
 
-    [SerializeField] Image thisImage;
-    [SerializeField] Color defaultColor = new Color(67, 67, 67, 1);
+    [SerializeField]
+    Image thisImage;
+
+    [SerializeField]
+    Color defaultColor = new Color(67, 67, 67, 1);
+
     public enum SubColorType
     {
         HEADER,
@@ -19,7 +23,9 @@ public class NetDataV : Checker
         WARNING,
         DEFAULT,
     }
-    [SerializeField] Color[] subColors;
+
+    [SerializeField]
+    Color[] subColors;
 
     void Start()
     {
@@ -61,7 +67,7 @@ public class NetDataV : Checker
         }
         return this;
     }
-    
+
     private void SetDefaultColor()
     {
         thisImage.color = defaultColor;
